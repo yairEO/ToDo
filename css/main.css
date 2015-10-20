@@ -759,7 +759,8 @@ input::placeholder {
 .ToDoComponent__footer .filter span {
 	position: absolute;
 	border-radius: 4px;
-	height: 100%;
+	top: 0;
+	bottom: 0;
 	-webkit-transition: 0.15s cubic-bezier(0.15, 0.53, 0.34, 1);
 	        transition: 0.15s cubic-bezier(0.15, 0.53, 0.34, 1);
 	background: rgba(0, 0, 0, 0.1);

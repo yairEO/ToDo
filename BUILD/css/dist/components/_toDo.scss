@@ -83,7 +83,8 @@
             span{
                 position: absolute;
                 border-radius: 4px;
-                height: 100%;
+                top:0;
+                bottom:0;
                 transition: .15s $ease-out;
                 background:rgba(black, .1);
             }

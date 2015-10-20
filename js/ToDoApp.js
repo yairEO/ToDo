@@ -1185,6 +1185,7 @@ ToDoApp.components.ToDo.prototype = {
         // add rendered item to the list of items
         this.DOM.ToDoList.append(newItem);
         this.itemsLeft();
+        this.DOM.selectAll.prop('checked', false);
     },
 
     // remove a list item
@@ -1225,6 +1226,7 @@ ToDoApp.components.ToDo.prototype = {
         return count;
     },
 
+    // All component's DOM events & callbacks
     events: {
         bind: function bind(DOM) {
             var that = this;
