@@ -1190,9 +1190,12 @@ ToDoApp.components.ToDo.prototype = {
 
     // remove a list item
     removeItem: function removeItem(item) {
+        var that = this;
         item.slideUp(200, function () {
             item.remove();
+            that.listCleanup();
         });
+
         this.itemsLeft();
     },
 
@@ -1203,12 +1206,11 @@ ToDoApp.components.ToDo.prototype = {
     },
 
     clearCompleted: function clearCompleted() {
+        var that = this;
         this.DOM.ToDoList.find('.completed').slideUp(200, function () {
             $(this).remove();
+            that.listCleanup();
         });
-
-        // if no items left, clean up DOM
-        if (!this.DOM.ToDoList[0].firstChildElement) this.DOM.ToDoList[0].innerHTML = '';
 
         this.DOM.selectAll.prop('checked', false);
         this.itemsLeft();
@@ -1222,8 +1224,13 @@ ToDoApp.components.ToDo.prototype = {
     itemsLeft: function itemsLeft() {
         var count = this.DOM.ToDoList.children(':not(.completed)').length;
         this.DOM.itemsLeft.attr('data-items-left', count);
-        console.log(count);
+
         return count;
+    },
+
+    // checks if the list has any children, and if not, make sure to remove all child nodes of all types
+    listCleanup: function listCleanup() {
+        if (!this.DOM.ToDoList[0].firstElementChild) this.DOM.ToDoList[0].innerHTML = '';
     },
 
     // All component's DOM events & callbacks
