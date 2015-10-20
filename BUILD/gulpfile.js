@@ -150,7 +150,7 @@ gulp.task('templates', function() {
 gulp.task('concatJS', function() {
     gulp.src('./js/concatenated/*.js')
         .pipe(sourcemaps.init())
-        .pipe(concat('_all.js'))
+        .pipe(concat('all.js'))
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('../js/'))
 
@@ -205,7 +205,7 @@ gulp.task('build_vendor_JS', function() {
 // PRODUCTION ONLY
 
 gulp.task('compress', function() {
-    gulp.src('../js/_all.js')
+    gulp.src('../js/all.js')
         .pipe(stripDebug())
         .pipe(uglify({
             compress: {
@@ -218,7 +218,7 @@ gulp.task('compress', function() {
             },
             mangle: true
         }))
-        //.pipe(concat('_all.js'))
+        //.pipe(concat('all.js'))
         .pipe(gulp.dest('../js/'))
 
     gulp.src('../js/' + config.namespace + '.js')
