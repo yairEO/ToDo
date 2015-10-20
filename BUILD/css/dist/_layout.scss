@@ -31,15 +31,6 @@ body{
 // Media Queries
 
 
-////////////////////////////////////////////////////////
-// Media Queries
-@include breakpoint(l){
-    .container{ max-width:mg($breakpoints, l);; }
-    body{
-        // &:after{ height:$footer-height-l; }
-    }
-}
-
 
 ////////////////////////////////////////////////////////
 // ON-SCREEN DEBUGGER

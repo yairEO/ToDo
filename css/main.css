@@ -814,27 +814,39 @@ input::placeholder {
 
 .ToDoPage .ToDoWrap {
 	width: 40%;
-	min-width: 300px;
+	min-width: 350px;
 	margin: 0 auto 4em;
 	box-shadow: 0 0 0 10px rgba(0, 0, 0, 0.1);
 	border-radius: 1px;
 	border-radius: 6px;
 }
 
+.ToDoPage .giLink {
+	position: fixed;
+	bottom: 10px;
+	right: 10px;
+	color: rgba(255, 255, 255, 0.5);
+	text-decoration: none;
+	font-size: 1.6em;
+	font-weight: 700;
+	-webkit-transition: .1s;
+	        transition: .1s;
+}
+
+.ToDoPage .giLink:hover {
+	color: #FFF;
+}
+
 /* No files to import found in modals//* */
-
-@media screen and (max-width: 1366px) {
-
-.container {
-	max-width: 1366px;
-}
-
-}
 
 @media screen and (max-width: 960px) {
 
 body:after {
 	height: 108px;
+}
+
+.ToDoComponent .editable {
+	font-size: 1.2em;
 }
 
 }

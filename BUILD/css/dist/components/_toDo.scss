@@ -26,6 +26,10 @@
         align-self : center;
     }
 
+    @include breakpoint(m){
+        .editable{ font-size: 1.2em; }
+    }
+
     //  ToDo list Header
     &__header{
         display: flex;
