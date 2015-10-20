@@ -1,1 +1,3 @@
-# EMC - Dashboard project - By Netcraft
+# ToDo - app demo
+
+using architecture
