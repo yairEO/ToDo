@@ -1,0 +1,35 @@
+// Script-generated file, do not modify by hand
+
+$icon-female-face-content: "\e60b";
+$icon-male-face-content: "\e60c";
+$icon-metric-content: "\e60d";
+$icon-fan-content: "\e601";
+$icon-gauge-content: "\e602";
+$icon-lightbulb-content: "\e603";
+$icon-logo-content: "\e604";
+$icon-plays-content: "\e605";
+$icon-email-content: "\e60a";
+$icon-angle-down-content: "\e600";
+$icon-whatsapp-content: "\e607";
+$icon-twitter-content: "\e608";
+$icon-facebook-content: "\e609";
+$icon-checkmark-content: "\e606";
+
+$icon-item-map: ('female-face': '\e60b', 'male-face': '\e60c', 'metric': '\e60d', 'fan': '\e601', 'gauge': '\e602', 'lightbulb': '\e603', 'logo': '\e604', 'plays': '\e605', 'email': '\e60a', 'angle-down': '\e600', 'whatsapp': '\e607', 'twitter': '\e608', 'facebook': '\e609', 'checkmark': '\e606');
+
+@mixin icon-classes {
+    .icon-female-face:before { content: $icon-female-face-content; }
+    .icon-male-face:before { content: $icon-male-face-content; }
+    .icon-metric:before { content: $icon-metric-content; }
+    .icon-fan:before { content: $icon-fan-content; }
+    .icon-gauge:before { content: $icon-gauge-content; }
+    .icon-lightbulb:before { content: $icon-lightbulb-content; }
+    .icon-logo:before { content: $icon-logo-content; }
+    .icon-plays:before { content: $icon-plays-content; }
+    .icon-email:before { content: $icon-email-content; }
+    .icon-angle-down:before { content: $icon-angle-down-content; }
+    .icon-whatsapp:before { content: $icon-whatsapp-content; }
+    .icon-twitter:before { content: $icon-twitter-content; }
+    .icon-facebook:before { content: $icon-facebook-content; }
+    .icon-checkmark:before { content: $icon-checkmark-content; }
+}

@@ -1,0 +1,9 @@
+{{ items.forEach(function(item, i){ }}
+<li class='ToDoComponent__item'>
+    <label>
+        <input type='checkbox' class="toggleItem" {{= item.checked ? 'checked' : '' }}>
+    </label>
+    <span class='ToDoComponent__item__text editable' contenteditable>{{= item.text }}</span>
+    <button class='ToDoComponent__item__remove' title='Remove item from list'>&times;</button>
+</li>
+{{ }); }}

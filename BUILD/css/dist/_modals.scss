@@ -1,0 +1,83 @@
+//////////////////////////////
+// General styling for modals windows
+
+#modal{ opacity:0; position:fixed; left:0; right:0; top:0; bottom:0; text-align:center; z-index:-1; padding:0 20px; background:rgba(#CCC, .8); -webkit-backface-visibility:hidden; transition:opacity 0.25s;
+    &:after{ content:''; display:inline-block; vertical-align:middle; height:100%; }
+
+    &.show{ z-index:999; opacity:1;
+        $blur : 8;
+
+        > .wrap{ opacity:1; transform:none; transition:.3s .1s $ease-out;
+            > .content{ box-shadow:0 0 0 8px rgba(#CCC, .4); }
+            > .outside{ top:-2em; }
+        }
+
+        &.blur ~ *:not(.ttip){
+            .desktop &{
+              //  @include blur(2);
+            }
+            .touch &{
+             //   @include blur(1);
+            }
+        }
+
+        // hide things which shouldn't be visible when a modal is shown
+        ~ .shepherd { display:none; }
+    }
+
+    &.hide{ opacity:0; transition-delay:120ms;
+        > .wrap{ transition-delay:0s; }
+    }
+
+    > .wrap,
+    &.hide > .wrap{ display:inline-block; opacity:0; width:98%; vertical-align:middle; position:relative; -webkit-transform:scale(1.2); transform:scale(1.2);
+        > .outside{ position:absolute; top:0; width:100%; text-align:center; font-size:1em; color:#FFF; transition:.3s $ease-out; }
+    }
+    //&.hide > .wrap{ -webkit-transform:scale(.8); transform:scale(.8); }
+    .wrap{
+        > .content{ position:relative; display:inline-block; /* min-width:$modalMinWidth; */ padding:$modalContent_padding; background:#000; color:#FFF; min-height:150px; border-radius:3px; // transition:.3s .1s ease-out;
+            > a.close{ position:absolute; z-index:1; top:-0.5em; right:-0.5em; color:#000; text-decoration:none; font-size:2.5em; text-align:center; line-height:0.7; width:1em; height:1em; background:#FFF; border-radius:50%; padding:5px; cursor:pointer; transition:0.2s;
+                &:hover{ box-shadow:0 0 0 8px rgba(255,255,255,0.2); color:color(red); }
+            }
+            h1{ font-weight:600; font-size:2em; margin-bottom:20px; }
+
+            @include breakpoint(handhald){
+                h1{ font-size:1.6em; }
+            }
+        }
+    }
+
+
+    // modals without a "close" button
+    &.noCloseBtn .close{ display:none; }
+
+    // loading state
+    &.loading .wrap > .content{ background:#FFF url('#{$path-images}loaders/loading-bubbles-lightBG.svg') 50% 50% / 20% no-repeat; }
+
+    form{ padding-bottom:5px;
+        footer{ text-align:center;
+            button{ width:100%; margin-bottom:.6em; font-size:1.2em; line-height:2; font-weight:600;
+                &:before{ line-height:1; }
+            }
+        }
+    }
+
+    @include breakpoint(700px){
+        // "respHeight" is a classes manualy added to modlas which needs responsive height treatment
+        &.respHeight{
+            form .item{
+                margin-bottom:3px;
+                &:last-child{ margin:0; }
+            }
+
+            font-size:0.8em;
+            // > .wrap > .content{ padding:nth($modalContent_padding, 1)*0.7 nth($modalContent_padding, 2); }
+            form input{ padding:0.6em; }
+        }
+    }
+
+    @include breakpoint(handhald){
+        // &.respHeight
+        > .wrap > .content{ width:100%; max-width:none; padding:15px; }
+    }
+}

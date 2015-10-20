@@ -1,0 +1,24 @@
+<div class='ToDoComponent' spellcheck='false'>
+    <header class='ToDoComponent__header'>
+        <label title='Select all list items'>
+            <input type='checkbox' class='selectAll'>
+        </label>
+        <div class='addToDoItem editable' contenteditable placeholder='Write something to add to the list'></div>
+    </header>
+
+    <input type='radio' name='ToDoComponent-togglegroup' hidden id='toggle__ToDoComponent-show-all' checked>
+    <input type='radio' name='ToDoComponent-togglegroup' hidden id='toggle__ToDoComponent-show-active'>
+    <input type='radio' name='ToDoComponent-togglegroup' hidden id='toggle__ToDoComponent-show-completed'>
+
+    <ul class='ToDoComponent__list'></ul>
+
+    <footer class='ToDoComponent__footer'>
+        <span class='ToDoComponent__items-left' data-items-left='0'>items left</span>
+        <div class='filter radio'>
+            <label for='toggle__ToDoComponent-show-all'>All</label>
+            <label for='toggle__ToDoComponent-show-active'>Active</label>
+            <label for='toggle__ToDoComponent-show-completed'>Completed</label>
+        </div>
+        <button class='clearCompleted'>Clear Completed</button>
+    </footer>
+</div>

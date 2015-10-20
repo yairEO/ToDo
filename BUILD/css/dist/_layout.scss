@@ -1,0 +1,51 @@
+html{ height:100%; -webkit-font-smoothing:antialiased; }
+body{
+    min-height:100%;
+    min-width:mg($dashboard, min-width);
+    padding:0; margin:0;
+    position:relative;
+    font:400 #{typography(base-font-size)}/1.4 typography(font-family);
+    color:#111;
+    overflow-y:scroll;
+    tap-highlight-color: rgba(0,0,0,0);
+
+    &.noScrollbar{ overflow:hidden; }
+    // preload images trick
+   // &:before{ width:1px; height:1px; content:url('#{$path-images}loaders/btn-loader.gif') url('#{$path-images}loaders/loader_bg_white.gif'); display:none; }
+    // extra epace for footer
+    //&:after{ content:''; display:block; height:$footer-height; background:#FFF; position:relative; clear:both; }
+
+    @include breakpoint(m){
+        &:after{ height:108px; }
+    }
+
+    @include breakpoint(handhald){
+        font-size:0.8em;
+    }
+
+    // hide tracking-appended iframes
+    > iframe{ display:none; }
+}
+
+////////////////////////////////////////////////////////
+// Media Queries
+
+
+////////////////////////////////////////////////////////
+// Media Queries
+@include breakpoint(l){
+    .container{ max-width:mg($breakpoints, l);; }
+    body{
+        // &:after{ height:$footer-height-l; }
+    }
+}
+
+
+////////////////////////////////////////////////////////
+// ON-SCREEN DEBUGGER
+#console{
+    position:fixed; z-index:9999; font-size:11px; color:yellow; max-width:100%; word-break:break-all;
+    left:0; top:0; background:rgba(0,0,0,0.8);
+    padding:20px; box-shadow:0 0 0 3px yellow;
+    .time{ color:red; margin-right:1em; }
+}

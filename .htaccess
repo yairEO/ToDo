@@ -1,0 +1,6 @@
+DirectoryIndex index.html
+
+RewriteEngine on
+RewriteCond %{REQUEST_URI} !\.(css|png|js|jpe?g|gif|bmp|svg|ico)$ [NC]
+RewriteRule .* index.html [L,QSA]
+

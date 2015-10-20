@@ -1,0 +1,24 @@
+// Page setup
+
+.ToDoPage{
+    background: #000 url('../images/background.jpg') 0 0 / cover no-repeat;
+
+    .pageTitle{
+        text-align: center;
+        color: C(gray5);
+        font-size: 4em;
+        font-weight: 700;
+        padding: 2em 0 .5em;
+    }
+
+    ////////////////////////////////
+    // Wrapper for the whole "app"
+    .ToDoWrap{
+        width:40%;
+        min-width: 300px;
+        margin: 0 auto 4em;
+        box-shadow: 0 0 0 10px rgba(black, .1);
+        border-radius: 1px;
+        border-radius: 6px;
+    }
+}

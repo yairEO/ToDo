@@ -1,0 +1,222 @@
+/////////////////////
+// Functions
+
+// map-get helper
+@function mg($map, $key) {
+    @if map-has-key($map, $key) {
+        @return map-get($map, $key);
+    }
+
+    @warn "Unknown `#{$key}` in #{$map}.";
+    @return null;
+}
+
+@function typography($key:"") {
+    @return unquote(mg($typography, $key));
+}
+
+@function layout($key:"") {
+    @return unquote(mg($layout, $key));
+}
+
+// Get Color
+@function C($key:"") {
+    @if $key == "" {
+      @return 'inherit';
+    }
+    @return mg($colors, $key);
+}
+
+/////////////////////
+
+// Remove units from a number.
+@function strip-unit($number) {
+  @if type-of($number) == 'number' and not unitless($number) {
+    @return $number / ($number * 0 + 1);
+  }
+
+  @return $number;
+}
+/////////////////////
+
+@keyframes pulsate{
+  50%  { opacity:.5; }
+}
+
+@keyframes bounceOut{
+  30%  { transform:scale(1.2); opacity:1; }
+  50%  { transform:scale(0.8); opacity:1; }
+  75%  { transform:scale(1.1); opacity:1; }
+  100% { transform:scale(1); opacity:1; }
+}
+
+@keyframes repaint{
+  from { width:99.999% }
+  to   { width:100% }
+}
+
+@mixin sideGap($g:"padding"){
+  #{$g}-left:layout(side-padding);
+  #{$g}-right:layout(side-padding);
+}
+
+
+@mixin breakpoint($key:"", $rule:'max-width'){
+    $value : null;
+    @if map-has-key($breakpoints, $key) {
+      $value : mg($breakpoints, $key);
+    }
+    @else {
+      $value : $key;
+    }
+    @media screen and (#{$rule} : #{$value} ){
+      @content;
+    }
+}
+
+@mixin container{
+    max-width:mg($breakpoints, xl);
+    margin:0 auto;
+    padding:0 mg($layout, side-padding);
+    //-moz-box-sizing:content-box;
+    box-sizing:content-box;
+
+    @include breakpoint(handhald){
+      padding:0 mg($layout, side-padding)/2;
+    }
+}
+
+///////////////////////////////////
+// Flexbox grid
+@mixin n-columns($min-width, $gutter, $last-equal: false, $max-cols: 5) {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -$gutter;
+  margin-top: -$gutter;
+
+  > .colItem {
+    flex: 1 0;
+    margin-left: $gutter;
+    margin-top: $gutter;
+
+    @if $last-equal {
+      @for $i from 2 through $max-cols {
+        $screen-width: ($min-width*$i)+($gutter*$i);
+        $column-width: (100%/$i);
+        @media (min-width: $screen-width) {
+          max-width: calc(#{$column-width} - #{$gutter});
+        }
+      }
+
+      $column-width: (100%/$max-cols);
+      @media (min-width: $min-width*$max-cols) {
+          min-width: calc(#{$column-width} - #{$gutter});
+      }
+    }
+  }
+}
+
+
+
+
+
+/////////////////////////////////////////
+// Blur
+
+@mixin blur($size){
+  filter: url("data:image/svg+xml;utf9,<svg%20version='1.1'%20xmlns='http://www.w3.org/2000/svg'><filter%20id='blur'><feGaussianBlur%20stdDeviation='#{$size}'%20/></filter></svg>#blur");
+  -webkit-filter:blur(#{$size}px);
+  -ms-filter: blur(#{$size}px);
+  -o-filter: blur(#{$size}px);
+  filter:blur(#{$size}px);
+}
+
+
+/////////////////////////////////////////
+
+@mixin arrow_helper($arrowSize, $arrowColor, $margin, $side, $align) {
+  @if $side == "top" {
+    border-bottom-color: $arrowColor;
+    top: -2 * $arrowSize;
+  }
+  @if $side == "bottom" {
+    border-top-color: $arrowColor;
+    @if $align == 'after' {
+      bottom: -$arrowSize;
+    }
+    @else{
+      bottom: -2 * $arrowSize;
+    }
+  }
+  @if $side == "left" {
+    border-right-color: $arrowColor;
+    left: -2 * $arrowSize;
+  }
+  @if $side == "right" {
+    border-left-color: $arrowColor;
+    right: -2 * $arrowSize;
+  }
+  @if $side == "right" or $side == "left" {
+    @if $align == "center" {
+      top: 50%;
+      margin-top: -$arrowSize;
+    }
+    @else if $align == "top" {
+      top: $margin;
+    }
+    @else if $align == "bottom" {
+      bottom: $margin;
+    }
+    @else if $align == "after" {
+      vertical-align: middle;
+
+    }
+  }
+  @if $side == "bottom" or $side == "top" {
+    @if $align == "center" {
+      right: 50%;
+      margin-right: -$arrowSize;
+    }
+    @else if $align == "left" {
+      left: $margin;
+    }
+    @else if $align == "right" {
+      right: $margin;
+    }
+  }
+}
+
+@mixin arrow($side: "right", $align: "center", $size: 20px, $color: #f6f6f6, $borderColor: "none", $borderSize: 3px) {
+  $selector: "&:after, &:before";
+  @if $borderColor == "none" {
+    $selector: "&:after";
+  }
+  #{$selector} {
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    border-width: $size;
+    @if $align != 'after' {
+      position: absolute;
+      pointer-events: none;
+    }
+    @else{
+      position:relative;
+      display:inline-block;
+    }
+    visibility: visible;
+  }
+
+  &:after {
+    @include arrow_helper($size, $color, $size, $side, $align);
+  }
+
+  @if $borderColor != "none" {
+    &:before {
+      border-width: $borderSize + $size;
+      @include arrow_helper($size + $borderSize, $borderColor, $size - $borderSize, $side, $align);
+    }
+  }
+}
+

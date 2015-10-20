@@ -1,0 +1,182 @@
+.ToDoComponent{
+    $side-padding        : 1em;
+    $inupt-label-padding : 1.4em $side-padding;
+
+    @mixin edit-mode(){
+        // border: 1px soild C(gray1);
+        box-shadow: 1px 1px 3px 1px rgba(black, .4) inset;
+        border-radius: 3px;
+        background: #FFF;
+        transition: 0s;
+
+        // background: linear-gradient(135deg, rgba(C(yellow), .3) 0%, rgba(C(yellow), 0) 100%);
+    }
+
+    border-bottom: 2px solid rgba(black, .2);
+    border-radius: 6px;
+    overflow: hidden;
+
+    // checkboxes
+    input{ transform:scale(1.5); }
+
+    // all editable elements
+    .editable{
+        padding: .5em;
+        margin: 5px 5px 5px 0;
+        align-self : center;
+    }
+
+    //  ToDo list Header
+    &__header{
+        display: flex;
+        align-items: baseline;
+        background: rgba(black,.2);
+        box-shadow: 0 -20px 20px -20px rgba(black, .4) inset;
+
+        label{
+            display: inline-block;
+            padding: $inupt-label-padding;
+        }
+
+        .addToDoItem{
+            flex : 1 1;
+            font-size: 1.4em;
+            color: rgba(white, .9);
+
+            &:focus{
+            }
+        }
+    }
+
+    &__items-left{
+        &::before{ content:attr(data-items-left); margin-right:.2em; }
+    }
+
+    &__list:empty ~ &__footer{ position:absolute; left:-9999px; }
+
+    //  ToDo list Footer
+    &__footer{
+        display         : flex;
+        align-items     : center;
+        align-content   : stretch;
+        flex-wrap       : nowrap;
+        justify-content : space-between;
+        background: rgba(white,.5);
+        padding: $side-padding;
+
+        // list items filtering selectors
+        .filter{
+            position: relative;
+            align-self: baseline;
+            > label{
+                display: inline-block;
+                margin:0 5px;
+                padding:.5em;
+                position: relative;
+                z-index: 1;
+                color:C(gray1);
+                &.active{
+                    color:black;
+                    font-weight: 700;
+                }
+            }
+            span{
+                position: absolute;
+                border-radius: 4px;
+                height: 100%;
+                transition: .15s $ease-out;
+                background:rgba(black, .1);
+            }
+        }
+
+        // clear all items button
+        .clearCompleted{
+            background: none;
+            border: 0;
+            &:hover{
+                color:C(red);
+            }
+        }
+    }
+
+
+    // List item
+    &__item{
+        display: flex;
+        position: relative;
+        border-bottom: 1px solid rgba(black, .1);
+        background: rgba(white,.5);
+
+        label{
+            padding: $inupt-label-padding;
+
+            input{  }
+        }
+
+        &__text{
+            flex: 1 1;
+            font-size: 1.3em;
+            //line-height: 1.2;
+
+            &[contenteditable]:focus{
+                @include edit-mode;
+                text-decoration: none !important;
+
+                ~ button{ transform: scale(0); }
+            }
+        }
+
+        &__remove{
+            position: absolute;
+            right: .1em;
+            top: .7em;
+            width: 30px;
+            height: 30px;
+            padding-bottom: 2px;
+
+            background: none;
+            border: 0;
+            color: C(red);
+            font-size: 1.6em;
+            border-radius: 50%;
+
+            transform: scale(0);
+            transition:.25s ease-out;
+
+            &:hover{
+                background: rgba(C(red), .1);
+                transition:.1s;
+            }
+        }
+
+        &:hover &__remove{
+            transform: none;
+        }
+
+        &.completed{
+            .ToDoComponent__item__text{
+                opacity: .4;
+                text-decoration: line-through;
+            }
+        }
+    }
+
+    @at-root {
+        #toggle__ToDoComponent-show-{
+            &all:checked{
+            }
+
+            &active:checked{
+                ~ .ToDoComponent__list{
+                    li.completed{ display:none; }
+                }
+            }
+
+            &completed:checked{
+                ~ .ToDoComponent__list{
+                    li:not(.completed){ display:none; }
+                }
+            }
+        }
+    }
+}

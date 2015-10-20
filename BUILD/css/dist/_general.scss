@@ -1,0 +1,111 @@
+////////////////////////////////////
+// Very general, cross-app, rules,
+// mostly small things, and should be kept for small things.
+////////////////////////////////////
+
+.container{ @include container; }
+.floatr{ float:right; }
+.hidden, input[hidden]{ display:none !important; }
+.centered{ text-align:center; }
+.show-mobile{ display:none; }
+.touch .show-mobile{ display:block; }
+.touch .hidden-mobile{ display:none; }
+.unselectable{
+  user-select:none;
+}
+
+
+@include breakpoint(handhald){
+  .show-mobile{ display:block; }
+  .hidden-mobile{ display:none; }
+}
+
+// body "loading" state
+body{
+  &.loading{
+      &:before{
+          position:fixed;
+          content:'';
+          display:block;
+          z-index:9999;
+          top:3px;
+          left:3px;
+          right:3px;
+          border-radius:3px;
+          box-shadow:0 0 3px rgba(0,0,0,.2);
+          width:0;
+          height:4px;
+          text-align:center;
+          background:color(blue);
+          animation:4s infinite pageLoading alternate;
+      }
+  }
+}
+
+@keyframes pageLoading{
+    0%{ width:0; }
+   50%{ width:calc(100% - 6px); left:3px; }
+  100%{ width:0; left:calc(100% - 6px); }
+}
+
+
+h1, h2, h3, h4, h5, h6{
+  font-family:typography(font-family);
+  font-weight:700;
+  //text-transform:capitalize;
+}
+
+h1{ font-size:3em; }
+h2{ font-size:2em; }
+h3{ font-size:1.7em; }
+h4{ font-size:1.3em; }
+
+img[data-src]{ opacity:0; transition:opacity 0.2s;
+	&.loaded{ opacity:1; }
+}
+
+button, label{ cursor:pointer; }
+p{ color:#444; padding:1em 0; }
+
+
+input.empty{ color:#999; }
+
+a{ color:C(blue); cursor:pointer;
+    &:hover{ text-decoration:underline; color:darken(C(blue), 20); }
+    &.type1{ color:#888; text-decoration:underline; font-size:0.9em;
+      &:hover{ text-decoration:none; color:#333; }
+    }
+}
+
+.percentage::after{ content:'%'; }
+
+
+// Circle with single character in the middle
+i.info{ display:inline-block; text-align:center; vertical-align:middle; font-size:10px; font-weight:600; font-style:normal; border-radius:50%; width:1.5em; height:1.5em; line-height:1.5; box-sizing:content-box; box-shadow:0 0 0 1px; cursor:help; transition:0.1s;
+  &:hover{ border-color:#222; background:#222; color:#FFF; }
+}
+
+.repaint{
+  animation:repaint 1ms;
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// contenteditable placeholders
+.editable[contenteditable]{
+    &:empty:before{ content:attr(placeholder); color:#FFF; opacity:.25; background:none; white-space:pre-wrap; transition:.2s; }
+    &:hover{ border-color:#DDD; }
+    &:focus{ border-color:#999;
+        &::before{ opacity:.12; }
+    }
+    &.filled{
+        &::before{ content:'\200B'; }
+    }
+
+	// for older IE
+    .no-smil &{
+      &:focus{ border-color:#777;
+        &::before{ opacity:1; content:'\200B'; }
+      }
+    }
+}

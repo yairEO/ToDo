@@ -1,0 +1,70 @@
+// Typography
+$typography : (
+    font-family    : "Roboto, Arial, sans-serif",
+    base-font-size : 14px
+);
+
+$breakpoints : (
+    xl       : 1600px,
+    l        : 1366px,
+    m        : 960px,
+    s        : 800px,
+    handhald : 480
+);
+
+// Colors
+$colors : (
+    gray1     : #333,
+    gray2     : #777,
+    gray3     : #CCC,
+    gray4     : #DDD,
+    gray5     : #EEE,
+    gray6     : #F1F1F1,
+
+    white     : #FFF,
+    yellow    : #E5C834,
+    pink      : #FF3F71,
+    green     : #56BC5D,
+    blue      : #37B1E5,
+    lightblue : #DAE8ED,
+    orange    : #FF761A,
+    red       : #D34747
+);
+
+$riskLevelsColors : (
+    none   : C(green),
+    medium : C(yellow),
+    high   : C(pink),
+);
+
+
+// Dashboard
+$dashboard : (
+    sidebar-width       : 240px,
+    mainmenu-bg--active : C(yellow),
+    min-width           : mg($breakpoints, s),
+);
+
+// global layout constants
+$layout : (
+    side-padding : 30px,
+);
+
+
+// Paths
+$path-sprite : '/images/sprite.png';
+$path-images : '../images/';
+
+
+// Modal
+$modalMinWidth          : 500px;
+$modalContent_padding   : 0 0;
+
+
+$box-shadow: 0 0 8px rgba(black,.15);
+
+// Easing
+$ease-out               : cubic-bezier(.15,.53,.34,1);
+$double-ease            : cubic-bezier(.5,0,.5,1);
+$easeOutBack            : cubic-bezier(0.175, 0.885, 0.32, 1.275);
+$easeInOut              : cubic-bezier(.7,.15,.36,1);
