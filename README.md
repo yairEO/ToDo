@@ -1,5 +1,7 @@
 # ToDo - app demo
 
+###[Demo page](http://yaireo.github.io/ToDo/)
+
 ### Directory & files structure
 
 
@@ -95,4 +97,3 @@
 
 
 
-##[Demo page](http://yaireo.github.io/ToDo/)
