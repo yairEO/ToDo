@@ -20,16 +20,23 @@ const ToDoApp = {
         return _.template(ToDoApp.templates[s + '.html']);
     },
 
-	// any global EMC-scope events binding goes here
-	bindEvents : function(){
-		ToDoApp.DOM.$WIN.on('beforeunload', function(){
-			ToDoApp.DOM.$BODY.addClass('loading');
-		})
-	},
+    events : {
+	   // any high-level events binding goes here
+        bind : function(){
+            ToDoApp.DOM.$WIN.on('beforeunload', ToDoApp.events.callbacks.beforeunload);
+        },
+
+        callbacks : {
+            beforeunload : function(){
+                ToDoApp.DOM.$BODY.addClass('loading');
+            }
+        }
+    },
 
 
     // on page load, before page routes are triggered
     preRoutes : function(){
+        ToDoApp.utilities.defaultCheckbxoes(); // Default back every checkbox and input on the page which might have changed by the user
     },
 
     //
@@ -45,12 +52,10 @@ const ToDoApp = {
 
 
     init : function(){
-        ToDoApp.utilities.defaultCheckbxoes(); // Default back every checkbox and input on the page which might have changed by the user
-
         // if social connect is neeed, toggle it
         // ToDoApp.connect();
 
-		ToDoApp.bindEvents();
+		ToDoApp.events.bind();
         ToDoApp.preRoutes();
         ToDoApp.routes.initPage();
     }
