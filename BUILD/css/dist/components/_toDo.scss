@@ -13,12 +13,12 @@
     }
 
     border-radius: 6px;
-    overflow: hidden;
+    position: relative;
 
     // checkboxes
     input{ transform:scale(1.5); }
 
-    .selectAllLabel{ visibility:hidden; }
+    .selectAllLabel{ opacity:0; margin-left:-2.5em; transition:.12s ease-out; }
 
     // all editable elements
     .editable{
@@ -28,19 +28,43 @@
     }
 
 
+    // remove list button
+    .removeList{
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 0;
+        border: 0;
+        background: C(red);
+        color: #FFF;
+        font-size: 1.3em;
+        border-radius: 3px 3px 0 0;
+        transform: translateY(-90%);
+    }
+
+    &:only-child{
+        .removeList{ display:none !important; }
+    }
+
+    //////////////////////////////////
+    // component Hover state
+    &:hover{
+        .removeList{ display:inline-block; }
+    }
+
     ///////////////////////////////////
     // Lists with items
     &.hasItems{
-        .selectAllLabel{ visibility:visible; }
+        .selectAllLabel{ opacity:1; margin:0; }
     }
-
-
 
     //  ToDo list Header
     &__header{
         display: flex;
         align-items: baseline;
-        background: rgba(black,.2);
+        background: rgba(black,.5);
+        border-radius: 6px 6px 0 0;
+        overflow: hidden;
         //box-shadow: 0 -20px 20px -20px rgba(black, .4) inset;
 
         label{
@@ -71,33 +95,36 @@
         align-content   : stretch;
         flex-wrap       : nowrap;
         justify-content : space-between;
-        background: rgba(white,.4);
+        background: rgba(white,.7);
         padding: $side-padding;
+        border-radius: 0 0 6px 6px;
 
         // list items filtering selectors
         .filter{
             position: relative;
             align-self: baseline;
-            > label{
+            > span{
                 display: inline-block;
-                margin:0 5px;
-                padding:.5em;
+                margin: 0 2px;
+                padding: .5em;
                 position: relative;
                 z-index: 1;
-                color:C(gray1);
+                color: C(gray1);
+                cursor: pointer;
+                border-radius: 8px;
                 &.active{
-                    color:black;
+                    background: rgba(black, .1);
                     font-weight: 700;
                 }
             }
-            span{
-                position: absolute;
-                border-radius: 4px;
-                top:0;
-                bottom:0;
-                transition: .15s $ease-out;
-                background:rgba(black, .1);
-            }
+            // span{
+            //     position: absolute;
+            //     border-radius: 4px;
+            //     top:0;
+            //     bottom:0;
+            //     transition: .15s $ease-out;
+            //     background:rgba(black, .1);
+            // }
         }
 
         // clear all items button
@@ -116,7 +143,7 @@
         display: flex;
         position: relative;
         box-shadow: 0 -1px rgba(black, .1) inset; // seperator line
-        background: rgba(white,.5);
+        background: rgba(white,.8);
         overflow: hidden;
         max-height: 62px;
         transition: .2s ease-out;
@@ -173,26 +200,21 @@
                 text-decoration: line-through;
             }
         }
+
     }
 
-    @at-root {
-        #toggle__ToDoComponent-show-{
-            &all:checked{
-            }
 
-            &active:checked{
-                ~ .ToDoComponent__list{
-                    li.completed{ max-height:0; }
-                }
-            }
+    ///////////////////////////////
+    // Filter
 
-            &completed:checked{
-                ~ .ToDoComponent__list{
-                    li:not(.completed){ max-height:0; }
-                }
-            }
-        }
+    &[data-filter=active]{
+        .ToDoComponent__list .completed{ max-height:0; }
     }
+
+    &[data-filter=completed]{
+        .ToDoComponent__list li:not(.completed){ max-height:0; }
+    }
+
 
     @include breakpoint(m){
         .editable{ font-size: 1.2em; }

@@ -12,7 +12,7 @@ ToDoApp.components.ToDo = function(settings){
 ToDoApp.components.ToDo.prototype = {
     init : function(){
         // render the component template and jQuerify it
-        this.DOM.scope = $( this.templates.component() );
+        this.DOM.scope = $( this.templates.component({ id : this.settings.id}) );
 
         this.populateDOM(this.DOM, this.DOM.scope);
 
@@ -42,6 +42,7 @@ ToDoApp.components.ToDo.prototype = {
         DOM.itemsLeft      = scope.find(namespace + 'items-left');
         DOM.clearCompleted = scope.find('.clearCompleted');
         DOM.selectAll      = scope.find('.selectAll');
+        DOM.filter         = scope.find('.filter');
 
         // make sure every DOM node was found
         ToDoApp.utilities.checkDOMbinding(DOM);
@@ -103,11 +104,7 @@ ToDoApp.components.ToDo.prototype = {
         // });
 
         this.items.splice(itemToRemove.index(), 1);
-
-        console.log( this.items );
-
-        if( this.itemsLeftCounter() == 0 )
-            this.DOM.scope.removeClass('hasItems');
+        this.itemsLeftCounter();
 
         this.storage.set.call(this);
     },
@@ -141,11 +138,13 @@ ToDoApp.components.ToDo.prototype = {
 
         this.DOM.selectAll.prop('checked', false);
         this.itemsLeftCounter();
+
         this.storage.set.call(this);
     },
 
     // traverse to closest list item from some child element and return it
     getItem : function(child){
+        console.log( child );
         return $(child).closest('.' + this.settings.namespace + '__item');
     },
 
@@ -155,6 +154,9 @@ ToDoApp.components.ToDo.prototype = {
                     }).length;
 
         this.DOM.itemsLeft.attr('data-items-left', count);
+
+        if( !count )
+            this.DOM.scope.removeClass('hasItems');
 
         return count;
     },
@@ -181,6 +183,7 @@ ToDoApp.components.ToDo.prototype = {
                         .on('change', '.toggleItem', CB('toggleItem'))
 
             DOM.selectAll.on('change', CB('toggleAllItems'));
+            DOM.filter.on('click', 'span', CB('filter'));
             DOM.clearCompleted.on('click', this.clearCompleted.bind(this));
 
             // DOM data-binding
@@ -251,6 +254,11 @@ ToDoApp.components.ToDo.prototype = {
                 this.DOM.ToDoList.children().each(function(){
                     that.markItem($(this), e.target.checked);
                 })
+            },
+
+            filter : function(e){
+                this.DOM.scope.attr('data-filter', e.target.dataset.filter);
+                $(e.target).addClass('active').siblings().removeClass('active');
             }
 
         }

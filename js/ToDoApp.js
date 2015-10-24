@@ -63,7 +63,7 @@ var ToDoApp = {
 
 ToDoApp.templates = {
     "list-item.html": "{{ items.forEach(function(item, i){ }}\r\n<li class='ToDoComponent__item {{= item.checked ? \"completed\" : \"\" }}' data-timestamp='{{= item.timestamp }}'>\r\n    <label>\r\n        <input type='checkbox' class=\"toggleItem\" {{= item.checked ? 'checked' : '' }}>\r\n    </label>\r\n    <span class='ToDoComponent__item__text editable' contenteditable>{{= item.text }}</span>\r\n    <button class='ToDoComponent__item__remove' title='Remove item from list'>&times;</button>\r\n</li>\r\n{{ }); }}",
-    "toDo.html": "<div class='ToDoComponent' spellcheck='false'>\r\n    <header class='ToDoComponent__header'>\r\n        <label class='selectAllLabel' title='Select all list items'>\r\n            <input type='checkbox' class='selectAll'>\r\n        </label>\r\n        <div class='addToDoItem editable' contenteditable placeholder='Write something to add to the list'></div>\r\n    </header>\r\n\r\n    <input type='radio' name='ToDoComponent-togglegroup' hidden id='toggle__ToDoComponent-show-all' checked>\r\n    <input type='radio' name='ToDoComponent-togglegroup' hidden id='toggle__ToDoComponent-show-active'>\r\n    <input type='radio' name='ToDoComponent-togglegroup' hidden id='toggle__ToDoComponent-show-completed'>\r\n\r\n    <ul class='ToDoComponent__list'></ul>\r\n\r\n    <footer class='ToDoComponent__footer'>\r\n        <span class='ToDoComponent__items-left' data-items-left='0'>items left</span>\r\n        <div class='filter radio'>\r\n            <label for='toggle__ToDoComponent-show-all'>All</label>\r\n            <label for='toggle__ToDoComponent-show-active'>Active</label>\r\n            <label for='toggle__ToDoComponent-show-completed'>Completed</label>\r\n        </div>\r\n        <button class='clearCompleted'>Clear Completed</button>\r\n    </footer>\r\n</div>"
+    "toDo.html": "<div class='ToDoComponent'>\r\n    <button class='removeList' title='Remove list'>&times;</button>\r\n    <header class='ToDoComponent__header'>\r\n        <label class='selectAllLabel' title='Select all list items'>\r\n            <input type='checkbox' class='selectAll'>\r\n        </label>\r\n        <div class='addToDoItem editable' contenteditable placeholder='Write something...'></div>\r\n    </header>\r\n\r\n    <ul class='ToDoComponent__list'></ul>\r\n\r\n    <footer class='ToDoComponent__footer'>\r\n        <span class='ToDoComponent__items-left' data-items-left='0'>items left</span>\r\n        <div class='filter radio'>\r\n            <span data-filter='all' class='active'>All</span>\r\n            <span data-filter='active'>Active</span>\r\n            <span data-filter='completed'>Completed</span>\r\n        </div>\r\n        <button class='clearCompleted'>Clear Completed</button>\r\n    </footer>\r\n</div>"
 };
 ////////////////////////////////////////////////////////
 // Any global configuration
@@ -560,7 +560,7 @@ ToDoApp.components.ToDo = function (settings) {
 ToDoApp.components.ToDo.prototype = {
     init: function init() {
         // render the component template and jQuerify it
-        this.DOM.scope = $(this.templates.component());
+        this.DOM.scope = $(this.templates.component({ id: this.settings.id }));
 
         this.populateDOM(this.DOM, this.DOM.scope);
 
@@ -590,6 +590,7 @@ ToDoApp.components.ToDo.prototype = {
         DOM.itemsLeft = scope.find(namespace + 'items-left');
         DOM.clearCompleted = scope.find('.clearCompleted');
         DOM.selectAll = scope.find('.selectAll');
+        DOM.filter = scope.find('.filter');
 
         // make sure every DOM node was found
         ToDoApp.utilities.checkDOMbinding(DOM);
@@ -645,10 +646,7 @@ ToDoApp.components.ToDo.prototype = {
         // });
 
         this.items.splice(itemToRemove.index(), 1);
-
-        console.log(this.items);
-
-        if (this.itemsLeftCounter() == 0) this.DOM.scope.removeClass('hasItems');
+        this.itemsLeftCounter();
 
         this.storage.set.call(this);
     },
@@ -682,11 +680,13 @@ ToDoApp.components.ToDo.prototype = {
 
         this.DOM.selectAll.prop('checked', false);
         this.itemsLeftCounter();
+
         this.storage.set.call(this);
     },
 
     // traverse to closest list item from some child element and return it
     getItem: function getItem(child) {
+        console.log(child);
         return $(child).closest('.' + this.settings.namespace + '__item');
     },
 
@@ -696,6 +696,8 @@ ToDoApp.components.ToDo.prototype = {
         }).length;
 
         this.DOM.itemsLeft.attr('data-items-left', count);
+
+        if (!count) this.DOM.scope.removeClass('hasItems');
 
         return count;
     },
@@ -716,6 +718,7 @@ ToDoApp.components.ToDo.prototype = {
             DOM.ToDoList.on('keydown blur', '.editable', CB('editItem')).on('click', 'button', CB('removeItem')).on('change', '.toggleItem', CB('toggleItem'));
 
             DOM.selectAll.on('change', CB('toggleAllItems'));
+            DOM.filter.on('click', 'span', CB('filter'));
             DOM.clearCompleted.on('click', this.clearCompleted.bind(this));
 
             // DOM data-binding
@@ -781,6 +784,11 @@ ToDoApp.components.ToDo.prototype = {
                 this.DOM.ToDoList.children().each(function () {
                     that.markItem($(this), e.target.checked);
                 });
+            },
+
+            filter: function filter(e) {
+                this.DOM.scope.attr('data-filter', e.target.dataset.filter);
+                $(e.target).addClass('active').siblings().removeClass('active');
             }
 
         }

@@ -1,23 +1,20 @@
-<div class='ToDoComponent' spellcheck='false'>
+<div class='ToDoComponent'>
+    <button class='removeList' title='Remove list'>&times;</button>
     <header class='ToDoComponent__header'>
         <label class='selectAllLabel' title='Select all list items'>
             <input type='checkbox' class='selectAll'>
         </label>
-        <div class='addToDoItem editable' contenteditable placeholder='Write something to add to the list'></div>
+        <div class='addToDoItem editable' contenteditable placeholder='Write something...'></div>
     </header>
-
-    <input type='radio' name='ToDoComponent-togglegroup' hidden id='toggle__ToDoComponent-show-all' checked>
-    <input type='radio' name='ToDoComponent-togglegroup' hidden id='toggle__ToDoComponent-show-active'>
-    <input type='radio' name='ToDoComponent-togglegroup' hidden id='toggle__ToDoComponent-show-completed'>
 
     <ul class='ToDoComponent__list'></ul>
 
     <footer class='ToDoComponent__footer'>
         <span class='ToDoComponent__items-left' data-items-left='0'>items left</span>
         <div class='filter radio'>
-            <label for='toggle__ToDoComponent-show-all'>All</label>
-            <label for='toggle__ToDoComponent-show-active'>Active</label>
-            <label for='toggle__ToDoComponent-show-completed'>Completed</label>
+            <span data-filter='all' class='active'>All</span>
+            <span data-filter='active'>Active</span>
+            <span data-filter='completed'>Completed</span>
         </div>
         <button class='clearCompleted'>Clear Completed</button>
     </footer>

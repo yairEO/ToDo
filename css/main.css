@@ -603,7 +603,7 @@ input::placeholder {
 
 .ToDoComponent {
 	border-radius: 6px;
-	overflow: hidden;
+	position: relative;
 }
 
 .ToDoComponent input {
@@ -613,7 +613,10 @@ input::placeholder {
 }
 
 .ToDoComponent .selectAllLabel {
-	visibility: hidden;
+	opacity: 0;
+	margin-left: -2.5em;
+	-webkit-transition: .12s ease-out;
+	        transition: .12s ease-out;
 }
 
 .ToDoComponent .editable {
@@ -624,8 +627,32 @@ input::placeholder {
 	        align-self: center;
 }
 
+.ToDoComponent .removeList {
+	display: none;
+	position: absolute;
+	right: 0;
+	top: 0;
+	border: 0;
+	background: #D34747;
+	color: #FFF;
+	font-size: 1.3em;
+	border-radius: 3px 3px 0 0;
+	-webkit-transform: translateY(-90%);
+	    -ms-transform: translateY(-90%);
+	        transform: translateY(-90%);
+}
+
+.ToDoComponent:only-child .removeList {
+	display: none !important;
+}
+
+.ToDoComponent:hover .removeList {
+	display: inline-block;
+}
+
 .ToDoComponent.hasItems .selectAllLabel {
-	visibility: visible;
+	opacity: 1;
+	margin: 0;
 }
 
 .ToDoComponent__header {
@@ -637,7 +664,9 @@ input::placeholder {
 	-webkit-align-items: baseline;
 	    -ms-flex-align: baseline;
 	        align-items: baseline;
-	background: rgba(0, 0, 0, 0.2);
+	background: rgba(0, 0, 0, 0.5);
+	border-radius: 6px 6px 0 0;
+	overflow: hidden;
 }
 
 .ToDoComponent__header label {
@@ -683,8 +712,9 @@ input::placeholder {
 	-webkit-justify-content: space-between;
 	    -ms-flex-pack: justify;
 	        justify-content: space-between;
-	background: rgba(255, 255, 255, 0.4);
+	background: rgba(255, 255, 255, 0.7);
 	padding: 1em;
+	border-radius: 0 0 6px 6px;
 }
 
 .ToDoComponent__footer .filter {
@@ -694,28 +724,20 @@ input::placeholder {
 	        align-self: baseline;
 }
 
-.ToDoComponent__footer .filter > label {
+.ToDoComponent__footer .filter > span {
 	display: inline-block;
-	margin: 0 5px;
+	margin: 0 2px;
 	padding: .5em;
 	position: relative;
 	z-index: 1;
 	color: #333;
+	cursor: pointer;
+	border-radius: 8px;
 }
 
-.ToDoComponent__footer .filter > label.active {
-	color: black;
-	font-weight: 700;
-}
-
-.ToDoComponent__footer .filter span {
-	position: absolute;
-	border-radius: 4px;
-	top: 0;
-	bottom: 0;
-	-webkit-transition: 0.15s cubic-bezier(0.15, 0.53, 0.34, 1);
-	        transition: 0.15s cubic-bezier(0.15, 0.53, 0.34, 1);
+.ToDoComponent__footer .filter > span.active {
 	background: rgba(0, 0, 0, 0.1);
+	font-weight: 700;
 }
 
 .ToDoComponent__footer .clearCompleted {
@@ -734,7 +756,7 @@ input::placeholder {
 	display: flex;
 	position: relative;
 	box-shadow: 0 -1px rgba(0, 0, 0, 0.1) inset;
-	background: rgba(255, 255, 255, 0.5);
+	background: rgba(255, 255, 255, 0.8);
 	overflow: hidden;
 	max-height: 62px;
 	-webkit-transition: .2s ease-out;
@@ -804,11 +826,11 @@ input::placeholder {
 	text-decoration: line-through;
 }
 
-#toggle__ToDoComponent-show-active:checked ~ .ToDoComponent__list li.completed {
+.ToDoComponent[data-filter=active] .ToDoComponent__list .completed {
 	max-height: 0;
 }
 
-#toggle__ToDoComponent-show-completed:checked ~ .ToDoComponent__list li:not(.completed) {
+.ToDoComponent[data-filter=completed] .ToDoComponent__list li:not(.completed) {
 	max-height: 0;
 }
 
@@ -864,7 +886,8 @@ input::placeholder {
 
 .ToDoPage .ToDoComponent {
 	min-width: 500px;
-	box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.1), 0 2px 10px rgba(0, 0, 0, 0.3);
+	max-width: 650px;
+	box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.3);
 	margin: 1em;
 }
 
