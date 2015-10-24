@@ -12,12 +12,13 @@
         // background: linear-gradient(135deg, rgba(C(yellow), .3) 0%, rgba(C(yellow), 0) 100%);
     }
 
-    border-bottom: 2px solid rgba(black, .2);
     border-radius: 6px;
     overflow: hidden;
 
     // checkboxes
     input{ transform:scale(1.5); }
+
+    .selectAllLabel{ visibility:hidden; }
 
     // all editable elements
     .editable{
@@ -26,16 +27,21 @@
         align-self : center;
     }
 
-    @include breakpoint(m){
-        .editable{ font-size: 1.2em; }
+
+    ///////////////////////////////////
+    // Lists with items
+    &.hasItems{
+        .selectAllLabel{ visibility:visible; }
     }
+
+
 
     //  ToDo list Header
     &__header{
         display: flex;
         align-items: baseline;
         background: rgba(black,.2);
-        box-shadow: 0 -20px 20px -20px rgba(black, .4) inset;
+        //box-shadow: 0 -20px 20px -20px rgba(black, .4) inset;
 
         label{
             display: inline-block;
@@ -65,7 +71,7 @@
         align-content   : stretch;
         flex-wrap       : nowrap;
         justify-content : space-between;
-        background: rgba(white,.5);
+        background: rgba(white,.4);
         padding: $side-padding;
 
         // list items filtering selectors
@@ -109,8 +115,11 @@
     &__item{
         display: flex;
         position: relative;
-        border-bottom: 1px solid rgba(black, .1);
+        box-shadow: 0 -1px rgba(black, .1) inset; // seperator line
         background: rgba(white,.5);
+        overflow: hidden;
+        max-height: 62px;
+        transition: .2s ease-out;
 
         label{
             padding: $inupt-label-padding;
@@ -173,15 +182,19 @@
 
             &active:checked{
                 ~ .ToDoComponent__list{
-                    li.completed{ display:none; }
+                    li.completed{ max-height:0; }
                 }
             }
 
             &completed:checked{
                 ~ .ToDoComponent__list{
-                    li:not(.completed){ display:none; }
+                    li:not(.completed){ max-height:0; }
                 }
             }
         }
+    }
+
+    @include breakpoint(m){
+        .editable{ font-size: 1.2em; }
     }
 }

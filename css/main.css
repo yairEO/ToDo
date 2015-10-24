@@ -328,6 +328,8 @@ img[data-src].loaded {
 button,
 label {
 	cursor: pointer;
+	font-family: inherit;
+	font-size: 1em;
 }
 
 p {
@@ -600,7 +602,6 @@ input::placeholder {
 /* No files to import found in vendor//* */
 
 .ToDoComponent {
-	border-bottom: 2px solid rgba(0, 0, 0, 0.2);
 	border-radius: 6px;
 	overflow: hidden;
 }
@@ -611,12 +612,20 @@ input::placeholder {
 	        transform: scale(1.5);
 }
 
+.ToDoComponent .selectAllLabel {
+	visibility: hidden;
+}
+
 .ToDoComponent .editable {
 	padding: .5em;
 	margin: 5px 5px 5px 0;
 	-webkit-align-self: center;
 	    -ms-flex-item-align: center;
 	        align-self: center;
+}
+
+.ToDoComponent.hasItems .selectAllLabel {
+	visibility: visible;
 }
 
 .ToDoComponent__header {
@@ -629,7 +638,6 @@ input::placeholder {
 	    -ms-flex-align: baseline;
 	        align-items: baseline;
 	background: rgba(0, 0, 0, 0.2);
-	box-shadow: 0 -20px 20px -20px rgba(0, 0, 0, 0.4) inset;
 }
 
 .ToDoComponent__header label {
@@ -675,7 +683,7 @@ input::placeholder {
 	-webkit-justify-content: space-between;
 	    -ms-flex-pack: justify;
 	        justify-content: space-between;
-	background: rgba(255, 255, 255, 0.5);
+	background: rgba(255, 255, 255, 0.4);
 	padding: 1em;
 }
 
@@ -725,8 +733,12 @@ input::placeholder {
 	display: -ms-flexbox;
 	display: flex;
 	position: relative;
-	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+	box-shadow: 0 -1px rgba(0, 0, 0, 0.1) inset;
 	background: rgba(255, 255, 255, 0.5);
+	overflow: hidden;
+	max-height: 62px;
+	-webkit-transition: .2s ease-out;
+	        transition: .2s ease-out;
 }
 
 .ToDoComponent__item label {
@@ -793,15 +805,32 @@ input::placeholder {
 }
 
 #toggle__ToDoComponent-show-active:checked ~ .ToDoComponent__list li.completed {
-	display: none;
+	max-height: 0;
 }
 
 #toggle__ToDoComponent-show-completed:checked ~ .ToDoComponent__list li:not(.completed) {
-	display: none;
+	max-height: 0;
 }
 
 .ToDoPage {
 	background: #000 url("../images/background.jpg") 0 0/cover no-repeat;
+}
+
+.ToDoPage .addList {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	background: #56BC5D;
+	color: #FFF;
+	font-size: 1.4em;
+	font-weight: 800;
+	border-radius: 4px;
+	border: 0;
+	padding: 0.3em 2em;
+}
+
+.ToDoPage .addList:hover {
+	background: #70c676;
 }
 
 .ToDoPage .pageTitle {
@@ -813,12 +842,30 @@ input::placeholder {
 }
 
 .ToDoPage .ToDoWrap {
-	width: 40%;
-	min-width: 350px;
-	margin: 0 auto 4em;
-	box-shadow: 0 0 0 10px rgba(0, 0, 0, 0.1);
-	border-radius: 1px;
-	border-radius: 6px;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: start;
+	-webkit-align-items: flex-start;
+	    -ms-flex-align: start;
+	        align-items: flex-start;
+	-webkit-align-content: stretch;
+	    -ms-flex-line-pack: stretch;
+	        align-content: stretch;
+	-webkit-flex-wrap: wrap;
+	    -ms-flex-wrap: wrap;
+	        flex-wrap: wrap;
+	-webkit-box-pack: center;
+	-webkit-justify-content: center;
+	    -ms-flex-pack: center;
+	        justify-content: center;
+}
+
+.ToDoPage .ToDoComponent {
+	min-width: 500px;
+	box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.1), 0 2px 10px rgba(0, 0, 0, 0.3);
+	margin: 1em;
 }
 
 .ToDoPage .giLink {

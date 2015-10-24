@@ -3,13 +3,9 @@
 ToDoApp.components.ToDo = function(settings){
     "use strict";
 
-    this.settings = $.extend(
-        {
-            namespace : 'ToDoComponent'
-        },
-        settings
-    );
+    this.settings = $.extend( true, {namespace:'ToDoComponent', id:0 }, settings ); // extend default settings
     this.DOM = {}; // any instance's cached DOM elements will be here
+    this.items = [];
     this.init();
 };
 
@@ -22,6 +18,9 @@ ToDoApp.components.ToDo.prototype = {
 
         // bind component events
         this.events.bind.call(this, this.DOM);
+
+        // load state (if any was saved)
+        this.addItem(this.storage.get.call(this) || []);
 
         // return component's DOM scope (or whatever is needed to be returned)
         return this.DOM.scope;
@@ -37,70 +36,112 @@ ToDoApp.components.ToDo.prototype = {
     populateDOM : function(DOM, scope){
         var namespace = '.' + this.settings.namespace +'__';
 
-        DOM.addToDoItem = scope.find('.addToDoItem');
-        DOM.selectAll = scope.find('.selectAll');
-        DOM.ToDoList = scope.find(namespace + 'list');
-        DOM.itemsLeft = scope.find(namespace + 'items-left');
+        DOM.addToDoItem    = scope.find('.addToDoItem');
+        DOM.selectAll      = scope.find('.selectAll');
+        DOM.ToDoList       = scope.find(namespace + 'list');
+        DOM.itemsLeft      = scope.find(namespace + 'items-left');
         DOM.clearCompleted = scope.find('.clearCompleted');
-        DOM.selectAll = scope.find('.selectAll');
+        DOM.selectAll      = scope.find('.selectAll');
+
+        // make sure every DOM node was found
+        ToDoApp.utilities.checkDOMbinding(DOM);
+    },
 
 
-        // log if any DOM elemtn wasn't cached
-        for( var i in DOM ){
-            if( !DOM[i].length ){
-                console.log( i, ' - DOM reference empty' );
+
+    // LocalStorage manager
+    storage : {
+        set : function(){
+            try {
+                window.localStorage['ToDo__' + this.settings.id] = JSON.stringify(this.items);
             }
+            catch(err){}
+        },
+
+        get : function(){
+            var s = window.localStorage['ToDo__' + this.settings.id];
+            try {
+                return JSON.parse(s);
+            }
+            catch(err){}
         }
     },
+
 
 
     // adds an itel to the bottom of the list
-    addItem : function(text){
-        if( !text ) return;
+    addItem : function(items){
+        if( !items.length ) return;
 
-        var templateData = {
-            items: [
-                {
-                    text : text
-                }
-            ]
-        }
+        // add item to state
+        this.items = this.items.concat(items);
+        this.storage.set.call(this);
 
         // render a single item
-        var newItem = this.templates.listItem(templateData);
+        var newItem = this.templates.listItem({ items:items });
 
         // add rendered item to the list of items
         this.DOM.ToDoList.append(newItem);
-        this.itemsLeft();
+        this.itemsLeftCounter();
+
+        // if for some reasom the "seclect all" checkbox was "checked", "uncheck" it
         this.DOM.selectAll.prop('checked', false);
+        this.DOM.scope.addClass('hasItems');
     },
 
     // remove a list item
-    removeItem : function(item){
+    removeItem : function(itemToRemove){
         var that = this;
-        item.slideUp(200, function(){
-            item.remove();
+
+        itemToRemove.slideUp(200, function(){
+            itemToRemove.remove();
             that.listCleanup();
         });
 
-        this.itemsLeft();
+        // this.items = _.filter(this.items, function(item){
+        //     return item.timestamp != itemToRemove.data('timestamp');
+        // });
+
+        this.items.splice(itemToRemove.index(), 1);
+
+        console.log( this.items );
+
+        if( this.itemsLeftCounter() == 0 )
+            this.DOM.scope.removeClass('hasItems');
+
+        this.storage.set.call(this);
     },
 
     // marks an item as completed
     markItem : function(item, state){
         item.toggleClass('completed', state);
-        this.itemsLeft();
+        this.itemsLeftCounter();
+
+        // update state
+        this.items[item.index()].checked = state;
+        this.storage.set.call(this);
     },
 
     clearCompleted : function(){
-        var that = this;
+        var that = this,
+            timestamps = [];
+
         this.DOM.ToDoList.find('.completed').slideUp(200, function(){
             $(this).remove();
             that.listCleanup();
+        }).each(function(){
+            // fill in all the timestamps which their items are to be removed
+            timestamps.push(this.dataset.timestamp);
+        });
+
+        // filter only what needs to be left, and save
+        this.items = _.filter(this.items, function(item){
+            return timestamps.indexOf(item.timestamp + "") == -1;
         });
 
         this.DOM.selectAll.prop('checked', false);
-        this.itemsLeft();
+        this.itemsLeftCounter();
+        this.storage.set.call(this);
     },
 
     // traverse to closest list item from some child element and return it
@@ -108,8 +149,11 @@ ToDoApp.components.ToDo.prototype = {
         return $(child).closest('.' + this.settings.namespace + '__item');
     },
 
-    itemsLeft : function(){
-        var count = this.DOM.ToDoList.children(':not(.completed)').length;
+    itemsLeftCounter : function(){
+        var count = _.filter(this.items, function(item){
+                        return !item.checked;
+                    }).length;
+
         this.DOM.itemsLeft.attr('data-items-left', count);
 
         return count;
@@ -122,6 +166,9 @@ ToDoApp.components.ToDo.prototype = {
     },
 
 
+
+
+    ///////////////////////////////////////////////
     // All component's DOM events & callbacks
     events : {
         bind : function(DOM){
@@ -150,8 +197,14 @@ ToDoApp.components.ToDo.prototype = {
 
                 // add item if "ENTER" key was pressed without "SHIFT" key
                 if( e.keyCode == 13 && !e.shiftKey ){
-                    var text = ToDoApp.utilities.string.normalizeContentEditable(input.innerHTML).trim();
-                    this.addItem(text); // add item
+                    var item = {
+                            text      : ToDoApp.utilities.string.normalizeContentEditable(input.innerHTML).trim(),
+                            checked   : false,
+                            timestamp : new Date().getTime()
+                        };
+
+                    // add item
+                    this.addItem([item]);
 
                     // clean up
                     input.innerHTML = '';

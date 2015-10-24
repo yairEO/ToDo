@@ -64,7 +64,7 @@ img[data-src]{ opacity:0; transition:opacity 0.2s;
 	&.loaded{ opacity:1; }
 }
 
-button, label{ cursor:pointer; }
+button, label{ cursor:pointer; font-family:inherit; font-size:1em; }
 p{ color:#444; padding:1em 0; }
 
 

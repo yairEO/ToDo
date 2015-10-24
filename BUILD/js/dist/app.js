@@ -41,7 +41,7 @@ const ToDoApp = {
 
     //
     routes : {
-        modal     : {},   // all website modals controlelrs should be under this scope
+        modal : {},   // all website modals controlelrs should be under this scope
 
         // Execute the page controller of the current page
         initPage : function(){
