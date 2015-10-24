@@ -685,8 +685,7 @@ ToDoApp.components.ToDo.prototype = {
     },
 
     // traverse to closest list item from some child element and return it
-    getItem: function getItem(child) {
-        console.log(child);
+    getListItem: function getListItem(child) {
         return $(child).closest('.' + this.settings.namespace + '__item');
     },
 
@@ -755,13 +754,18 @@ ToDoApp.components.ToDo.prototype = {
 
             editItem: function editItem(e) {
                 if (e.type == 'focusout' || e.keyCode == 13 && !e.shiftKey) {
-                    var input = e.target,
+                    var item = this.getListItem.call(this, e.target),
+                        input = e.target,
                         text = input.innerHTML;
 
                     // fix formatting for extra empty lines and spaces
                     for (var i = 5; i--;) {
                         text = text.trim().replace(/^(&nbsp;)|(&nbsp;)+$/, '').replace(/^(<br>)|(<br>)+$/, '').trim();
-                    }if (text) input.innerHTML = text;else this.removeItem(this.getItem.call(this, input));
+                    }if (text) input.innerHTML = text;else this.removeItem(this.getListItem.call(this, input));
+
+                    // save state
+                    this.items[item.index()].text = text;
+                    this.storage.set.call(this);
 
                     input.blur(); // remove focus
                     return false;
@@ -769,12 +773,12 @@ ToDoApp.components.ToDo.prototype = {
             },
 
             removeItem: function removeItem(e) {
-                var item = this.getItem.call(this, e.target);
+                var item = this.getListItem.call(this, e.target);
                 this.removeItem(item);
             },
 
             toggleItem: function toggleItem(e) {
-                var item = this.getItem.call(this, e.target);
+                var item = this.getListItem.call(this, e.target);
                 this.markItem(item, e.target.checked);
             },
 
