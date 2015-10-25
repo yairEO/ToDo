@@ -838,6 +838,11 @@ input::placeholder {
 	background: #000 url("../images/background.jpg") 0 0/cover no-repeat;
 }
 
+.ToDoPage #header {
+	background: rgba(0, 0, 0, 0.4);
+	padding: 1em;
+}
+
 .ToDoPage .addList {
 	position: absolute;
 	top: 8px;
@@ -856,11 +861,9 @@ input::placeholder {
 }
 
 .ToDoPage .pageTitle {
-	text-align: center;
 	color: #EEE;
-	font-size: 4em;
+	font-size: 1.6em;
 	font-weight: 700;
-	padding: 2em 0 0.5em;
 }
 
 .ToDoPage .ToDoWrap {
@@ -882,6 +885,7 @@ input::placeholder {
 	-webkit-justify-content: center;
 	    -ms-flex-pack: center;
 	        justify-content: center;
+	padding-top: 2em;
 }
 
 .ToDoPage .ToDoComponent {
