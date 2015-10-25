@@ -1,6 +1,7 @@
 var gulp         = require('gulp'),
     gutil        = require('gulp-util'),
     watch        = require('gulp-watch'),
+    webserver    = require('gulp-webserver'),
 
     sourcemaps   = require('gulp-sourcemaps'),
     sass         = require('gulp-sass'),
@@ -26,10 +27,28 @@ var gulp         = require('gulp'),
 
 var config = {
         namespace : 'ToDoApp',
+        server : {
+            // livereload: true,
+            // directoryListing: true,
+            host : 'localhost',
+            port : 3210,
+            fallback : 'index.html',
+            path : '/',
+            open: true
+        },
         production: false
     },
     lastSpriteStream;
 
+
+//////////////////////////
+// SPA webserver
+gulp.task('webserver', function() {
+    gulp.src('../')
+        .pipe(
+            webserver(config.server)
+        );
+});
 
 //////////////////////////
 // Compile SCSS to CSS
@@ -163,11 +182,9 @@ gulp.task('buildJS', function() {
     var src = [
         './js/dist/app.js',
         './js/dist/templates.js',
-        './js/dist/connect.js',
         './js/dist/config.js',
         './js/dist/utilities.js',
-        './js/dist/modals.js',
-        './js/dist/components/*.js',
+        './js/dist/components/**/*.js',
         './js/dist/pages/**/*.js',
         './js/dist/modals/*.js',
     ];
@@ -182,8 +199,6 @@ gulp.task('buildJS', function() {
         .pipe(sourcemaps.init())
         .pipe(concat( config.namespace + '.js'))
         .pipe(babel().on('error', function(err){ console.log(err.message) }))
-        //.pipe(jshint())
-        //.pipe(jshint.reporter("default"))
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('../js/'))
 
@@ -302,7 +317,7 @@ gulp.task('set-prod', function() {
 
 gulp.task('prod', ['set-prod', 'default', 'compress']); // generate code for production-only
 
-gulp.task('default', [ 'icomoon', 'scss', 'spriteLoop', 'templates', 'concatJS', 'buildJS', 'build_vendor_JS', 'lint', 'watch']);
+gulp.task('default', [ 'icomoon', 'scss', 'spriteLoop', 'templates', 'concatJS', 'buildJS', 'build_vendor_JS', 'lint', 'watch', 'webserver']);
 
 gulp.task('watch', function() {
     //    gulp.watch('./views/modals/*.html', ['modals']);

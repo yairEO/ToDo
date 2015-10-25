@@ -1,5 +1,5 @@
 {{ items.forEach(function(item, i){ }}
-<li class='ToDoComponent__item'>
+<li class='ToDoComponent__item {{= item.checked ? "completed" : "" }}' data-timestamp='{{= item.timestamp }}'>
     <label>
         <input type='checkbox' class="toggleItem" {{= item.checked ? 'checked' : '' }}>
     </label>

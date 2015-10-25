@@ -33,30 +33,14 @@ ToDoApp.utilities = {
         });
     },
 
-    // General window values on resize
-    // window : (function(){
-    //     var result = { scrollY : 0 },
-    //         timer,
-    //         getScrollY = function(){
-    //             fastdom.read(function(){
-    //                 result.scrollY = window.pageYOffset || document.documentElement.scrollTop;
-    //                 clearTimeout(timer);
-    //                 timer = setTimeout(scrollEnd, 200);
-    //                 if( timer != null )
-    //                     ToDoApp.DOM.$BODY.addClass('scrolling');
-    //             });
-    //         };
-
-    //     function scrollEnd(){
-    //         timer = null;
-    //         ToDoApp.DOM.$BODY.removeClass('scrolling');
-    //     }
-
-    //     ToDoApp.DOM.$WIN.on('scroll.getScrollY', getScrollY);
-    //     getScrollY();
-
-    //     return result;
-    // })(),
+    // log if any DOM elemtn wasn't cached
+    checkDOMbinding : function(DOM){
+        for( var i in DOM ){
+            if( !DOM[i] ){
+                console.log( Function.caller, i, ' - DOM reference empty' );
+            }
+        }
+    },
 
 
     ///////////////////////////////////

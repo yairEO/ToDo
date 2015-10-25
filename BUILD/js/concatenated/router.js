@@ -47,13 +47,18 @@
             this.root = '/';
             return this;
         },
-        check: function(f) {
-            var fragment = f || this.getFragment();
-            for(var i=0; i<this.routes.length; i++) {
-                var match = fragment.match(this.routes[i].re);
-                if(match) {
+        check: function(hash) {
+            var reg, keys, match, routeParams, i;
+            for (i = 0, max = this.routes.length; i < max; i++) {
+                routeParams = {}
+                keys = this.routes[i].path.match(/:([^\/]+)/g);
+                match = hash.match(new RegExp(this.routes[i].path.replace(/:([^\/]+)/g, "([^\/]*)")));
+                if (match) {
                     match.shift();
-                    this.routes[i].handler.apply({}, match);
+                    match.forEach(function(value, i) {
+                        routeParams[keys[i].replace(":", "")] = value;
+                    });
+                    this.routes[i].handler.call({}, routeParams);
                     return this;
                 }
             }
