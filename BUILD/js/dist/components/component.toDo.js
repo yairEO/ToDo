@@ -2,8 +2,11 @@
 
 ToDoApp.components.ToDo = function(settings){
     "use strict";
-
-    this.settings = $.extend( true, {namespace:'ToDoComponent', id:0 }, settings ); // extend default settings
+    // extend default settings
+    this.settings = $.extend(
+                    true,
+                    { namespace:'ToDoComponent', id:ToDoApp.utilities.randomString(1) }
+                    , settings );
     this.DOM = {}; // any instance's cached DOM elements will be here
     this.items = [];
     this.init();
@@ -13,6 +16,7 @@ ToDoApp.components.ToDo.prototype = {
     init : function(){
         // render the component template and jQuerify it
         this.DOM.scope = $( this.templates.component({ id : this.settings.id}) );
+        this.DOM.scope.data('component', this); // save scope on top DOM node
 
         this.populateDOM(this.DOM, this.DOM.scope);
 

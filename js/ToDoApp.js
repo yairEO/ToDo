@@ -550,8 +550,8 @@ ToDoApp.utilities = {
 
 ToDoApp.components.ToDo = function (settings) {
     "use strict";
-
-    this.settings = $.extend(true, { namespace: 'ToDoComponent', id: 0 }, settings); // extend default settings
+    // extend default settings
+    this.settings = $.extend(true, { namespace: 'ToDoComponent', id: ToDoApp.utilities.randomString(1) }, settings);
     this.DOM = {}; // any instance's cached DOM elements will be here
     this.items = [];
     this.init();
@@ -561,6 +561,7 @@ ToDoApp.components.ToDo.prototype = {
     init: function init() {
         // render the component template and jQuerify it
         this.DOM.scope = $(this.templates.component({ id: this.settings.id }));
+        this.DOM.scope.data('component', this); // save scope on top DOM node
 
         this.populateDOM(this.DOM, this.DOM.scope);
 
@@ -810,52 +811,87 @@ ToDoApp.routes.ToDo = function () {
         addList: $('.addList')
     };
 
+    // page-scope events
     var events = {
         bind: function bind() {
             DOM.addList.on('click', events.callbacks.addNewList);
             DOM.ToDoWrap.on('click', '.removeList', events.callbacks.removeList);
         },
+
         callbacks: {
             addNewList: function addNewList() {
-                components.ToDo.addList();
+                var instance = components.ToDo.addList();
+                // add that NEW items to the list of ids in localstorage
+                components.ToDo.storage.listsIDs.push(instance.settings.id);
+                components.ToDo.storage.set();
             },
 
-            removeList: function removeList() {}
+            removeList: function removeList() {
+                var listDOM = $(this).closest('.ToDoComponent'),
+                    instance = listDOM.data('component');
+
+                listDOM.removeData('component');
+
+                // remove localStorage traces
+                delete window.localStorage['ToDo__' + instance.settings.id];
+                components.ToDo.storage.listsIDs = _.without(components.ToDo.storage.listsIDs, instance.settings.id);
+                components.ToDo.storage.set();
+
+                // remove the actual DOM node
+                instance.DOM.scope.remove();
+            }
         }
     };
 
-    // components this page is using
+    // page components
     var components = {
         ToDo: {
             instances: [],
 
             init: function init() {
-                for (var i in window.localStorage) {
-                    if (i.indexOf('ToDo__') != -1) {
-                        components.ToDo.addList();
-                    }
+                var listsIDs = components.ToDo.storage.get();
+
+                for (var i in listsIDs) {
+                    components.ToDo.addList(listsIDs[i]);
                 }
 
                 if (!components.ToDo.instances.length) {
-                    components.ToDo.addList();
+                    var instance = components.ToDo.addList();
+                    // add that NEW items to the list of ids in localstorage
+                    components.ToDo.storage.listsIDs.push(instance.settings.id);
+                    components.ToDo.storage.set();
                 }
             },
 
-            addList: function addList() {
-                var instance = new ToDoApp.components.ToDo({ id: components.ToDo.instances.length });
+            addList: function addList(id) {
+                var instance = new ToDoApp.components.ToDo(id ? { id: id } : null);
                 components.ToDo.instances.push(instance);
                 DOM.ToDoWrap.append(instance.DOM.scope);
+                return instance;
+            },
+
+            storage: {
+                listsIDs: [],
+                // list Array of lists
+                get: function get() {
+                    try {
+                        components.ToDo.storage.listsIDs = JSON.parse(window.localStorage['ToDo__lists']);
+                    } catch (err) {}
+
+                    return components.ToDo.storage.listsIDs;
+                },
+
+                set: function set() {
+                    window.localStorage['ToDo__lists'] = JSON.stringify(components.ToDo.storage.listsIDs);
+                }
             }
         }
     };
 
     // load page components
     components.ToDo.init();
+    // bind page events
     events.bind();
-
-    // setup "follwer" lpugin for sorting buttons (cool effect)
-    // DOM.ToDoComponent = $('.ToDoComponent');
-    // DOM.ToDoComponent.find('.filter').follower({ start:0, selector:'label', snap:true });
 };
 ToDoApp.init();
 //# sourceMappingURL=ToDoApp.js.map
