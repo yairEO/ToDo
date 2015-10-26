@@ -6,17 +6,31 @@
     #header{
         background: rgba(black, .4);
         padding: 1em;
+
+        .filter{
+            display:inline-block; margin-left:2em; vertical-align:middle;
+            > span{
+                display: inline-block;
+                margin: 0 2px;
+                padding: .5em;
+                position: relative;
+                z-index: 1;
+                color: C(gray4);
+                cursor: pointer;
+                border-radius: 8px;
+                &.active{
+                    background: rgba(white, .2);
+                    font-weight: 700;
+                }
+            }
+        }
     }
 
     .addList{ float:right; background:C(green); color:#FFF; font-size:1.4em; font-weight:800; border-radius:4px; border:0; padding:.3em 2em;
         &:hover{ background:lighten(C(green),7); }
     }
 
-    .pageTitle{
-        color: C(gray5);
-        font-size: 1.6em;
-        font-weight: 700;
-    }
+    .pageTitle{ display:inline-block; vertical-align:middle; color:C(gray5); font-size:1.6em; font-weight:700; }
 
     ////////////////////////////////
     // Wrapper for the whole "app"

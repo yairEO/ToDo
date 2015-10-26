@@ -8,10 +8,15 @@
         <link rel="stylesheet" href="css/main.css">
         <link rel="shortcut icon" href="images/favicon.ico" type="image/ico">
     </head>
-    <body class='ToDoPage' data-init='toDo'>
+    <body class='ToDoPage'>
         <header id='header'>
             <button class='addList' title='Add new list'>+</button>
             <h1 class='pageTitle'>To-Do Lists</h1>
+            <div class='filter'>
+                <span data-filter='all' title='Show all' class='active'>All</span>
+                <span data-filter='active' title='Show only un-done items'>Active</span>
+                <span data-filter='completed' title='Show only completed items'>Completed</span>
+            </div>
         </header>
         <div class='ToDoWrap'></div>
         <a class='giLink' href='https://github.com/yairEO/ToDo'>Github project</a>

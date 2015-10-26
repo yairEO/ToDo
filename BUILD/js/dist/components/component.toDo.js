@@ -176,7 +176,11 @@ ToDoList.prototype = {
     },
 
 
-
+    filter : function(value){
+        var filterBtn = this.DOM.filter.children().filter('[data-filter='+ value+']');
+        filterBtn.addClass('active').siblings().removeClass('active');
+        this.DOM.scope.attr('data-filter', value);
+    },
 
     ///////////////////////////////////////////////
     // All component's DOM events & callbacks
@@ -269,8 +273,8 @@ ToDoList.prototype = {
             },
 
             filter : function(e){
-                this.DOM.scope.attr('data-filter', e.target.dataset.filter);
-                $(e.target).addClass('active').siblings().removeClass('active');
+                var value = e.target.dataset.filter;
+                this.filter(value);
             }
 
         }

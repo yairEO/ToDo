@@ -94,7 +94,7 @@
     }
 
     var list_item = "{{ items.forEach(function(item, i){ }}\r\n<li class='ToDoComponent__item {{= item.checked ? \"completed\" : \"\" }}' data-timestamp='{{= item.timestamp }}'>\r\n    <label>\r\n        <input type='checkbox' class=\"toggleItem\" {{= item.checked ? 'checked' : '' }}>\r\n    </label>\r\n    <span class='ToDoComponent__item__text editable' contenteditable>{{= item.text }}</span>\r\n    <button class='ToDoComponent__item__remove' title='Remove item from list'>&times;</button>\r\n</li>\r\n{{ }); }}";
-    var toDo$1 = "<div class='ToDoComponent'>\r\n    <button class='removeList' title='Remove list'>&times;</button>\r\n    <header class='ToDoComponent__header'>\r\n        <label class='selectAllLabel' title='Select all list items'>\r\n            <input type='checkbox' class='selectAll'>\r\n        </label>\r\n        <div class='addToDoItem editable' contenteditable placeholder='Write something...'></div>\r\n    </header>\r\n\r\n    <ul class='ToDoComponent__list'></ul>\r\n\r\n    <footer class='ToDoComponent__footer'>\r\n        <span class='ToDoComponent__items-left' data-items-left='0'>items left</span>\r\n        <div class='filter radio'>\r\n            <span data-filter='all' class='active'>All</span>\r\n            <span data-filter='active'>Active</span>\r\n            <span data-filter='completed'>Completed</span>\r\n        </div>\r\n        <button class='clearCompleted'>Clear Completed</button>\r\n    </footer>\r\n</div>";
+    var toDo$1 = "<div class='ToDoComponent'>\r\n    <button class='removeList' title='Remove list'>&times;</button>\r\n    <header class='ToDoComponent__header'>\r\n        <label class='selectAllLabel' title='Select all list items'>\r\n            <input type='checkbox' class='selectAll'>\r\n        </label>\r\n        <div class='addToDoItem editable' contenteditable placeholder='Write something...'></div>\r\n    </header>\r\n\r\n    <ul class='ToDoComponent__list'></ul>\r\n\r\n    <footer class='ToDoComponent__footer'>\r\n        <span class='ToDoComponent__items-left' data-items-left='0'>items left</span>\r\n        <div class='filter'>\r\n            <span data-filter='all' class='active'>All</span>\r\n            <span data-filter='active'>Active</span>\r\n            <span data-filter='completed'>Completed</span>\r\n        </div>\r\n        <button class='clearCompleted'>Clear Completed</button>\r\n    </footer>\r\n</div>";
 
     /**
      * Copies the values of `source` to `array`.
@@ -13408,7 +13408,11 @@
         },
 
 
-
+        filter : function(value){
+            var filterBtn = this.DOM.filter.children().filter('[data-filter='+ value+']');
+            filterBtn.addClass('active').siblings().removeClass('active');
+            this.DOM.scope.attr('data-filter', value);
+        },
 
         ///////////////////////////////////////////////
         // All component's DOM events & callbacks
@@ -13501,13 +13505,101 @@
                 },
 
                 filter : function(e){
-                    this.DOM.scope.attr('data-filter', e.target.dataset.filter);
-                    $(e.target).addClass('active').siblings().removeClass('active');
+                    var value = e.target.dataset.filter;
+                    this.filter(value);
                 }
 
             }
         }
     };
+
+    var Router = {
+        routes: [],
+        mode: null,
+        root: '/',
+        config: function(options) {
+            this.mode = options && options.mode && options.mode == 'history'
+                        && !!(history.pushState) ? 'history' : 'hash';
+            this.root = options && options.root ? '/' + this.clearSlashes(options.root) + '/' : '/';
+            return this;
+        },
+        getFragment: function() {
+            var fragment = '';
+            if(this.mode === 'history') {
+                fragment = this.clearSlashes(decodeURI(location.pathname + location.search));
+                fragment = fragment.replace(/\?(.*)$/, '');
+                fragment = this.root != '/' ? fragment.replace(this.root, '') : fragment;
+            } else {
+                var match = window.location.href.match(/#(.*)$/);
+                fragment = match ? match[1] : '';
+            }
+            return this.clearSlashes(fragment);
+        },
+        clearSlashes: function(path) {
+            return path.toString().replace(/\/$/, '').replace(/^\//, '');
+        },
+        add: function(re, handler) {
+            if(typeof re == 'function') {
+                handler = re;
+                re = '';
+            }
+            this.routes.push({ re: re, handler: handler});
+            return this;
+        },
+        remove: function(param) {
+            for(var i=0, r; i<this.routes.length, r = this.routes[i]; i++) {
+                if(r.handler === param || r.re.toString() === param.toString()) {
+                    this.routes.splice(i, 1);
+                    return this;
+                }
+            }
+            return this;
+        },
+        flush: function() {
+            this.routes = [];
+            this.mode = null;
+            this.root = '/';
+            return this;
+        },
+        check: function(f) {
+            var fragment = f || this.getFragment();
+            for(var i=0; i<this.routes.length; i++) {
+                var match = fragment.match(this.routes[i].re);
+                if(match) {
+                    match.shift();
+                    this.routes[i].handler.apply({}, match);
+                    return this;
+                }
+            }
+            return this;
+        },
+        listen: function() {
+            var self = this;
+            var current = self.getFragment();
+            var fn = function() {
+                if(current !== self.getFragment()) {
+                    current = self.getFragment();
+                    self.check(current);
+                }
+            }
+            clearInterval(this.interval);
+            this.interval = setInterval(fn, 50);
+            return this;
+        },
+        navigate: function(path) {
+            path = path ? path : '';
+            if(this.mode === 'history') {
+                history.pushState(null, null, this.root + this.clearSlashes(path));
+            } else {
+                window.location.href.match(/#(.*)$/);
+                window.location.href = window.location.href.replace(/#(.*)$/, '') + '#' + path;
+            }
+            return this;
+        }
+    }
+
+    // configuration
+    Router.config({ mode: 'history'});
 
     function toDo(){
         "use strict";
@@ -13515,7 +13607,8 @@
         // Cached page DOM elements
         var DOM = {
             ToDoWrap : $('.ToDoWrap'),
-            addList  : $('.addList')
+            addList  : $('.addList'),
+            filter   : $('.filter')
         }
 
         // page-scope events
@@ -13523,6 +13616,7 @@
             bind : function(){
                 DOM.addList.on('click', events.callbacks.addNewList);
                 DOM.ToDoWrap.on('click', '.removeList', events.callbacks.removeList)
+                DOM.filter.on('click', 'span', events.callbacks.filter)
             },
 
             callbacks : {
@@ -13546,6 +13640,14 @@
 
                     // remove the actual DOM node
                     instance.DOM.scope.remove();
+                },
+
+                // filter all lists
+                filter : function(e){
+                    var value = e.target.dataset.filter;
+                    //this.DOM.scope.attr('data-filter', e.target.dataset.filter);
+                    Router.navigate(value);
+                    $(e.target).addClass('active').siblings().removeClass('active');
                 }
             }
         }
@@ -13600,15 +13702,48 @@
         componentsLoader.ToDo.init();
         // bind page events
         events.bind();
+
+        // public
+        return {
+            components : componentsLoader
+        }
     }
 
     var controllers = Object.freeze({
         toDo: toDo
     });
 
+    // import * as utils from './utils';
+
     (function() {
         // development flag,
-        //DEV : window.location.hostname == 'localhost',
+        //DEV : window.location.hostname == 'localhost';
+
+        var state = {
+            controller : null
+        }
+
+        function routes(){
+            // since there is only one page, it will be invoked as the default and only one:
+            state.controller = controllers['toDo']();
+
+            Router
+                .add(/completed/, function(){
+                    // filter all lists
+                    events.callbacks.filterAllLists('completed');
+                })
+                .add(/active/, function(){
+                    events.callbacks.filterAllLists('active');
+                })
+                .add(function() {
+                    events.callbacks.filterAllLists('all');
+                    // for unkown routes, navigate back to root
+                    Router.navigate('');
+                })
+                .listen(); // listen to url changes
+
+            Router.check(); // check current window url
+        }
 
         var events = {
     	   // high-level events binding goes here
@@ -13619,6 +13754,12 @@
             callbacks : {
                 beforeunload : function(){
                     DOM.$BODY.addClass('loading');
+                },
+
+                filterAllLists : function(value){
+                    state.controller.components.ToDo.instances.forEach(function(instance){
+                        instance.filter(value);
+                    })
                 }
             }
         }
@@ -13628,19 +13769,10 @@
             defaultCheckboxes();
         }
 
-        // get the "data-init" from the body element, to know which initial page controller to run
-        function initPage(){
-            var routes = $(document.body).data('init');
-
-            if( controllers[routes] )
-                controllers[routes]();
-        }
-
-
         function init(){
     		events.bind();
             preRoutes();
-            initPage();
+            routes();
         }
 
         init();

@@ -1,5 +1,6 @@
 import ToDoList from '../components/component.toDo';
 import _ from '../vendor/lodash/lodash';
+import Router from '../vendor/router';
 
 export function toDo(){
     "use strict";
@@ -7,7 +8,8 @@ export function toDo(){
     // Cached page DOM elements
     var DOM = {
         ToDoWrap : $('.ToDoWrap'),
-        addList  : $('.addList')
+        addList  : $('.addList'),
+        filter   : $('.filter')
     }
 
     // page-scope events
@@ -15,6 +17,7 @@ export function toDo(){
         bind : function(){
             DOM.addList.on('click', events.callbacks.addNewList);
             DOM.ToDoWrap.on('click', '.removeList', events.callbacks.removeList)
+            DOM.filter.on('click', 'span', events.callbacks.filter)
         },
 
         callbacks : {
@@ -38,6 +41,14 @@ export function toDo(){
 
                 // remove the actual DOM node
                 instance.DOM.scope.remove();
+            },
+
+            // filter all lists
+            filter : function(e){
+                var value = e.target.dataset.filter;
+                //this.DOM.scope.attr('data-filter', e.target.dataset.filter);
+                Router.navigate(value);
+                $(e.target).addClass('active').siblings().removeClass('active');
             }
         }
     }
@@ -92,4 +103,9 @@ export function toDo(){
     componentsLoader.ToDo.init();
     // bind page events
     events.bind();
+
+    // public
+    return {
+        components : componentsLoader
+    }
 }

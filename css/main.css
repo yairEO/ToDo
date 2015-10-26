@@ -842,6 +842,28 @@ input::placeholder {
 	padding: 1em;
 }
 
+.ToDoPage #header .filter {
+	display: inline-block;
+	margin-left: 2em;
+	vertical-align: middle;
+}
+
+.ToDoPage #header .filter > span {
+	display: inline-block;
+	margin: 0 2px;
+	padding: .5em;
+	position: relative;
+	z-index: 1;
+	color: #DDD;
+	cursor: pointer;
+	border-radius: 8px;
+}
+
+.ToDoPage #header .filter > span.active {
+	background: rgba(255, 255, 255, 0.2);
+	font-weight: 700;
+}
+
 .ToDoPage .addList {
 	float: right;
 	background: #56BC5D;
@@ -858,6 +880,8 @@ input::placeholder {
 }
 
 .ToDoPage .pageTitle {
+	display: inline-block;
+	vertical-align: middle;
 	color: #EEE;
 	font-size: 1.6em;
 	font-weight: 700;
