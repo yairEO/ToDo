@@ -6,7 +6,7 @@
 
     Should run:
     > npm i -g lodash-cli
-    > lodash modularize exports=es settings={interpolate: /\{\{\=(.+?)\}\}/g, escape: /\{\{\-(.+?)\}\}/g, evaluate: /\{\{(.+?)\}\}/g }"
+    > lodash modularize exports=es settings="{interpolate: /\{\{\=(.+?)\}\}/g, escape: /\{\{\-(.+?)\}\}/g, evaluate: /\{\{(.+?)\}\}/g }"
 
 
 

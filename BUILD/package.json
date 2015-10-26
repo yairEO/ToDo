@@ -2,7 +2,11 @@
   "name": "ToDo",
   "version": "0.1.0",
   "author": "Yair Even Or",
-  "private": true,
+  "private": false,
+  "scripts": {
+    "build": "npm i --save lodash-cli | lodash modularize exports=es settings='{}'",
+    "prepublish": "npm run build"
+  },
   "devDependencies": {
     "event-stream": "^3.3.1",
     "gulp": "^3.9.0",

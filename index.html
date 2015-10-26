@@ -5,7 +5,7 @@
         <title>ToDo</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <link href='http://fonts.googleapis.com/css?family=Roboto:300,400,500,700' rel='stylesheet' type='text/css'>
-        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="/css/main.css">
         <link rel="shortcut icon" href="images/favicon.ico" type="image/ico">
     </head>
     <body class='ToDoPage'>
@@ -13,9 +13,9 @@
             <button class='addList' title='Add new list'>+</button>
             <h1 class='pageTitle'>To-Do Lists</h1>
             <div class='filter'>
-                <span data-filter='all' title='Show all' class='active'>All</span>
-                <span data-filter='active' title='Show only un-done items'>Active</span>
-                <span data-filter='completed' title='Show only completed items'>Completed</span>
+                <a href='/ToDo' data-filter='all' title='Show all' class='active'>All</a>
+                <a href='/ToDo/active' data-filter='active' title='Show only un-done items'>Active</a>
+                <a href='/ToDo/completed' data-filter='completed' title='Show only completed items'>Completed</a>
             </div>
         </header>
         <div class='ToDoWrap'></div>
@@ -24,6 +24,6 @@
         <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="/js/vendor/jquery.min.js"><\/script>')</script>
         <!-- App scripts -->
-        <script src="js/ToDoApp.js"></script>
+        <script src="/js/ToDoApp.js"></script>
     </body>
 </html>

@@ -17,7 +17,7 @@ export function toDo(){
         bind : function(){
             DOM.addList.on('click', events.callbacks.addNewList);
             DOM.ToDoWrap.on('click', '.removeList', events.callbacks.removeList)
-            DOM.filter.on('click', 'span', events.callbacks.filter)
+            DOM.filter.on('click', 'a', events.callbacks.filter)
         },
 
         callbacks : {
@@ -46,9 +46,9 @@ export function toDo(){
             // filter all lists
             filter : function(e){
                 var value = e.target.dataset.filter;
-                //this.DOM.scope.attr('data-filter', e.target.dataset.filter);
-                Router.navigate(value);
+                Router.navigate( $(this).attr('href') );
                 $(e.target).addClass('active').siblings().removeClass('active');
+                return false;
             }
         }
     }

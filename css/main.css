@@ -848,7 +848,7 @@ input::placeholder {
 	vertical-align: middle;
 }
 
-.ToDoPage #header .filter > span {
+.ToDoPage #header .filter > a {
 	display: inline-block;
 	margin: 0 2px;
 	padding: .5em;
@@ -857,9 +857,10 @@ input::placeholder {
 	color: #DDD;
 	cursor: pointer;
 	border-radius: 8px;
+	text-decoration: none;
 }
 
-.ToDoPage #header .filter > span.active {
+.ToDoPage #header .filter > a.active {
 	background: rgba(255, 255, 255, 0.2);
 	font-weight: 700;
 }

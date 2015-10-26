@@ -13616,7 +13616,7 @@
             bind : function(){
                 DOM.addList.on('click', events.callbacks.addNewList);
                 DOM.ToDoWrap.on('click', '.removeList', events.callbacks.removeList)
-                DOM.filter.on('click', 'span', events.callbacks.filter)
+                DOM.filter.on('click', 'a', events.callbacks.filter)
             },
 
             callbacks : {
@@ -13645,9 +13645,9 @@
                 // filter all lists
                 filter : function(e){
                     var value = e.target.dataset.filter;
-                    //this.DOM.scope.attr('data-filter', e.target.dataset.filter);
-                    Router.navigate(value);
+                    Router.navigate( $(this).attr('href') );
                     $(e.target).addClass('active').siblings().removeClass('active');
+                    return false;
                 }
             }
         }
@@ -13728,17 +13728,19 @@
             state.controller = controllers['toDo']();
 
             Router
-                .add(/completed/, function(){
+                .add(/ToDo\/completed/, function(){
                     // filter all lists
                     events.callbacks.filterAllLists('completed');
                 })
-                .add(/active/, function(){
+                .add(/ToDo\/active/, function(){
                     events.callbacks.filterAllLists('active');
                 })
+                .add(/ToDo/, function(){
+                })
                 .add(function() {
-                    events.callbacks.filterAllLists('all');
                     // for unkown routes, navigate back to root
-                    Router.navigate('');
+                   // Router.navigate('ToDo');
+                    events.callbacks.filterAllLists('all');
                 })
                 .listen(); // listen to url changes
 
@@ -13757,9 +13759,12 @@
                 },
 
                 filterAllLists : function(value){
-                    state.controller.components.ToDo.instances.forEach(function(instance){
-                        instance.filter(value);
-                    })
+                    if( state.controller )
+                        state.controller.components.ToDo.instances.forEach(function(instance){
+                            instance.filter(value);
+                        })
+                    else
+                        console.warn('no app state');
                 }
             }
         }

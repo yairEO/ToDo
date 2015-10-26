@@ -18,17 +18,19 @@ import Router from './vendor/router';
         state.controller = controllers['toDo']();
 
         Router
-            .add(/completed/, function(){
+            .add(/ToDo\/completed/, function(){
                 // filter all lists
                 events.callbacks.filterAllLists('completed');
             })
-            .add(/active/, function(){
+            .add(/ToDo\/active/, function(){
                 events.callbacks.filterAllLists('active');
             })
+            .add(/ToDo/, function(){
+            })
             .add(function() {
-                events.callbacks.filterAllLists('all');
                 // for unkown routes, navigate back to root
-                Router.navigate('');
+               // Router.navigate('ToDo');
+                events.callbacks.filterAllLists('all');
             })
             .listen(); // listen to url changes
 
@@ -47,9 +49,12 @@ import Router from './vendor/router';
             },
 
             filterAllLists : function(value){
-                state.controller.components.ToDo.instances.forEach(function(instance){
-                    instance.filter(value);
-                })
+                if( state.controller )
+                    state.controller.components.ToDo.instances.forEach(function(instance){
+                        instance.filter(value);
+                    })
+                else
+                    console.warn('no app state');
             }
         }
     }
