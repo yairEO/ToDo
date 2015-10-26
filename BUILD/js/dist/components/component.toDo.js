@@ -1,18 +1,22 @@
+import * as utilities from '../utilities';
+import * as templates from '../auto-generated/templates';
+import _ from '../vendor/lodash/lodash';
+
 // "To-Do list" component controller
 
-ToDoApp.components.ToDo = function(settings){
+export default function ToDoList(settings){
     "use strict";
     // extend default settings
     this.settings = $.extend(
                     true,
-                    { namespace:'ToDoComponent', id:ToDoApp.utilities.randomString(1) }
+                    { namespace:'ToDoComponent', id:utilities.randomString(1) }
                     , settings );
     this.DOM = {}; // any instance's cached DOM elements will be here
     this.items = [];
     this.init();
 };
 
-ToDoApp.components.ToDo.prototype = {
+ToDoList.prototype = {
     init : function(){
         // render the component template and jQuerify it
         this.DOM.scope = $( this.templates.component({ id : this.settings.id}) );
@@ -32,8 +36,8 @@ ToDoApp.components.ToDo.prototype = {
 
     // component's temlpates
     templates : {
-        component : ToDoApp.tmpl('toDo'),
-        listItem : ToDoApp.tmpl('list-item')
+        component : _.template(templates.toDo),
+        listItem : _.template(templates.list_item)
     },
 
     // populate DOM object
@@ -49,7 +53,7 @@ ToDoApp.components.ToDo.prototype = {
         DOM.filter         = scope.find('.filter');
 
         // make sure every DOM node was found
-        ToDoApp.utilities.checkDOMbinding(DOM);
+        utilities.checkDOMbinding(DOM);
     },
 
 
@@ -189,8 +193,6 @@ ToDoApp.components.ToDo.prototype = {
             DOM.filter.on('click', 'span', CB('filter'));
             DOM.clearCompleted.on('click', this.clearCompleted.bind(this));
 
-            // DOM data-binding
-            //ToDoApp.utilities.dataBinder.call(this, this.DOM.scope, this.bindMethods, this.DOM);
 
             function CB(func){
                 return that.events.callbacks[func].bind(that);
@@ -204,7 +206,7 @@ ToDoApp.components.ToDo.prototype = {
                 // add item if "ENTER" key was pressed without "SHIFT" key
                 if( e.keyCode == 13 && !e.shiftKey ){
                     var item = {
-                            text      : ToDoApp.utilities.string.normalizeContentEditable(input.innerHTML).trim(),
+                            text      : utilities.string.normalizeContentEditable(input.innerHTML).trim(),
                             checked   : false,
                             timestamp : new Date().getTime()
                         };
@@ -228,7 +230,7 @@ ToDoApp.components.ToDo.prototype = {
                         text = input.innerHTML;
 
                     // fix formatting for extra empty lines and spaces
-                    for( let i=5; i--;)
+                    for( var i=5; i--;)
                         text = text.trim().replace(/^(&nbsp;)|(&nbsp;)+$/, '').replace(/^(<br>)|(<br>)+$/, '').trim();
 
                     if( text )

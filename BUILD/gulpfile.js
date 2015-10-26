@@ -2,6 +2,7 @@ var gulp         = require('gulp'),
     gutil        = require('gulp-util'),
     watch        = require('gulp-watch'),
     webserver    = require('gulp-webserver'),
+    rollup       = require('gulp-rollup'),
 
     sourcemaps   = require('gulp-sourcemaps'),
     sass         = require('gulp-sass'),
@@ -15,7 +16,7 @@ var gulp         = require('gulp'),
     concat       = require('gulp-concat'),
     babel        = require('gulp-babel'),
     eslint       = require('gulp-eslint'),
-    fc2json      = require('gulp-file-contents-to-json'),
+    fc2modules   = require('gulp-file-contents-to-modules'),
     stripDebug   = require('gulp-strip-debug'),
     shell        = require('gulp-shell'),
     spritesmith  = require('gulp.spritesmith'),
@@ -149,16 +150,14 @@ function makeSprite(settings, folder) {
 
 
 //////////////////////
-// TEMPLATES - combines all template files into one javascript object file, with keys as filenames and values as strings
+// TEMPLATES - Convert template files into one javascript file with ES6 esports (per template file)
 
 gulp.task('templates', function() {
-    // Generate JSON from any file contents (https://www.npmjs.com/package/gulp-file-contents-to-json)
-
     gulp.src('./templates/**/*.html')
-        .pipe(fc2json('templates.js'))
-        .pipe(insert.prepend(config.namespace + '.templates = '))
-        .pipe(insert.append(';'))
-        .pipe(gulp.dest('./js/dist/'));
+        .pipe(fc2modules('templates.js'))
+        //.pipe(insert.prepend(config.namespace + '.templates = '))
+        //.pipe(insert.append(';'))
+        .pipe(gulp.dest('./js/dist/auto-generated/'));
 });
 
 
@@ -176,6 +175,37 @@ gulp.task('concatJS', function() {
     if (config.production)
         gulp.task('compress');
 });
+
+
+
+gulp.task('bundleJS', function() {
+    fs.truncate('../js/ToDoApp.js', 0, function() {
+        console.log('emptied "ToDoApp.js" file')
+    });
+
+    // combine all components
+    // gulp.src('./js/dist/components/**/*.js')
+    //     .pipe(concat('components_bundle.js'))
+    //     .pipe(gulp.dest('./js/dist/'))
+
+    // combine all page controllers
+    gulp.src('./js/dist/pages/**/*.js')
+        .pipe(concat('controllers_bundle.js'))
+        .pipe(gulp.dest('./js/dist/auto-generated'))
+
+    gulp.src('js/dist/app.js', {read: false})
+        //.pipe(rollup({format: 'amd'}))
+        .pipe(rollup({
+            format : 'umd',
+            moduleId: config.namespace
+           // exports : 'named', // doesn't work
+        }))
+        //.pipe(babel().on('error', function(err){ console.log(err.message) }))
+        .pipe(concat( config.namespace + '.js'))
+
+        .pipe(gulp.dest('../js/'))
+});
+
 
 // build App scripts
 gulp.task('buildJS', function() {
@@ -198,7 +228,10 @@ gulp.task('buildJS', function() {
     gulp.src(src)
         .pipe(sourcemaps.init())
         .pipe(concat( config.namespace + '.js'))
-        .pipe(babel().on('error', function(err){ console.log(err.message) }))
+        .pipe(babel({
+                modules : 'umd',
+                moduleIds : 'XXX'
+            }).on('error', function(err){ console.log(err.message) }))
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('../js/'))
 
@@ -276,6 +309,7 @@ gulp.task('compress', function() {
 
 
 gulp.task('lint', function () {
+    return;
     return gulp.src(['./js/**/*.js'])
         // eslint() attaches the lint output to the eslint property
         // of the file object so it can be used by other modules.
@@ -285,7 +319,7 @@ gulp.task('lint', function () {
             rules: {
                 'strict': 0,
             },
-            'ecmaFeatures' : {
+            ecmaFeatures : {
                 modules: true
             },
             globals: {
@@ -317,7 +351,7 @@ gulp.task('set-prod', function() {
 
 gulp.task('prod', ['set-prod', 'default', 'compress']); // generate code for production-only
 
-gulp.task('default', [ 'icomoon', 'scss', 'spriteLoop', 'templates', 'concatJS', 'buildJS', 'build_vendor_JS', 'lint', 'watch', 'webserver']);
+gulp.task('default', [ 'icomoon', 'scss', 'spriteLoop', 'templates', 'concatJS', 'bundleJS', 'build_vendor_JS', 'lint', 'watch', 'webserver']);
 
 gulp.task('watch', function() {
     //    gulp.watch('./views/modals/*.html', ['modals']);
@@ -326,7 +360,7 @@ gulp.task('watch', function() {
     // gulp.watch('./css/dist/voting/**/*.scss', ['voting_styles']); // voting system styles
     gulp.watch('./templates/**/*.html', ['templates']);
     gulp.watch('./js/concatenated/*.js', ['concatJS']);
-    gulp.watch('./js/dist/**/*.js', ['buildJS', 'lint']);
+    gulp.watch('./js/dist/!(auto-generated)/**/*.js', ['bundleJS', 'lint']);
     gulp.watch('./js/vendor/**/*.js', ['build_vendor_JS']);
     gulp.watch('./fonts/selection.json', ['icomoon']);
     // Watch .js files

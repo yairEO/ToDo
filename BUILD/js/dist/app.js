@@ -1,3 +1,7 @@
+import './helpers';
+import * as utilities from './utilities';
+import * as controllers from './auto-generated/controllers_bundle';
+
 const ToDoApp = {
 	/////////////////////////////////
     // Global cached DOM elements
@@ -12,16 +16,8 @@ const ToDoApp = {
 
     DEV : window.location.hostname == 'localhost',
 
-    components : {},
-
-    templates : {},
-
-    tmpl : function(s){
-        return _.template(ToDoApp.templates[s + '.html']);
-    },
-
     events : {
-	   // any high-level events binding goes here
+	   // high-level events binding goes here
         bind : function(){
             ToDoApp.DOM.$WIN.on('beforeunload', ToDoApp.events.callbacks.beforeunload);
         },
@@ -36,7 +32,13 @@ const ToDoApp = {
 
     // on page load, before page routes are triggered
     preRoutes : function(){
-        ToDoApp.utilities.defaultCheckbxoes(); // Default back every checkbox and input on the page which might have changed by the user
+        // _.templateSettings = {
+        //     interpolate : /\{\{\=(.+?)\}\}/g,
+        //     escape      : /\{\{\-(.+?)\}\}/g,
+        //     evaluate    : /\{\{(.+?)\}\}/g
+        // };
+
+        utilities.defaultCheckboxes(); // Default back every checkbox and input on the page which might have changed by the user
     },
 
     //
@@ -46,7 +48,10 @@ const ToDoApp = {
         // Execute the page controller of the current page
         initPage : function(){
             var routes = $(document.body).data('init');
-            ToDoApp.utilities.matchRoute(routes);
+
+            if( controllers[routes] )
+                controllers[routes]();
+            //utilities.matchRoute(routes);
         }
     },
 
@@ -61,3 +66,4 @@ const ToDoApp = {
     }
 };
 
+ToDoApp.init();

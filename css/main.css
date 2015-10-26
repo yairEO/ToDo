@@ -758,7 +758,6 @@ input::placeholder {
 	box-shadow: 0 -1px rgba(0, 0, 0, 0.1) inset;
 	background: rgba(255, 255, 255, 0.8);
 	overflow: hidden;
-	max-height: 62px;
 	-webkit-transition: .2s ease-out;
 	        transition: .2s ease-out;
 }
@@ -844,9 +843,7 @@ input::placeholder {
 }
 
 .ToDoPage .addList {
-	position: absolute;
-	top: 8px;
-	right: 8px;
+	float: right;
 	background: #56BC5D;
 	color: #FFF;
 	font-size: 1.4em;
