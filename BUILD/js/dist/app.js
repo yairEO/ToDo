@@ -1,30 +1,21 @@
 import './helpers';
+import DOM from './helpers/DOMcache';
 import * as utilities from './utilities';
 import * as controllers from './auto-generated/controllers_bundle';
 
 const ToDoApp = {
-	/////////////////////////////////
-    // Global cached DOM elements
-    DOM : {
-        $HTML : $(document.documentElement),
-        $DOC  : $(document),
-        $WIN  : $(window),
-        $BODY : $(document.body)
-    },
-
     // development flag,
-
     DEV : window.location.hostname == 'localhost',
 
     events : {
 	   // high-level events binding goes here
         bind : function(){
-            ToDoApp.DOM.$WIN.on('beforeunload', ToDoApp.events.callbacks.beforeunload);
+            DOM.$WIN.on('beforeunload', ToDoApp.events.callbacks.beforeunload);
         },
 
         callbacks : {
             beforeunload : function(){
-                ToDoApp.DOM.$BODY.addClass('loading');
+                DOM.$BODY.addClass('loading');
             }
         }
     },

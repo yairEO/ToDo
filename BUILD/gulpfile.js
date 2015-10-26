@@ -360,7 +360,7 @@ gulp.task('watch', function() {
     // gulp.watch('./css/dist/voting/**/*.scss', ['voting_styles']); // voting system styles
     gulp.watch('./templates/**/*.html', ['templates']);
     gulp.watch('./js/concatenated/*.js', ['concatJS']);
-    gulp.watch('./js/dist/!(auto-generated)/**/*.js', ['bundleJS', 'lint']);
+    gulp.watch(['./js/dist/*.js', './js/dist/components/**/*.js', './js/dist/helpers/*.js', './js/dist/pages/**/*.js', './js/dist/vendor/**/*.js'], ['bundleJS', 'lint']);
     gulp.watch('./js/vendor/**/*.js', ['build_vendor_JS']);
     gulp.watch('./fonts/selection.json', ['icomoon']);
     // Watch .js files
