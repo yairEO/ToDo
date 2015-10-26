@@ -17,6 +17,72 @@
         });
     }
 
+    var string = {
+        normalizeContentEditable : function(s){
+            if( !s )
+                return '';
+
+            return s.trim()
+                .replace(/<br(\s*)\/*>/ig, '\n')
+                .replace(/&nbsp;/ig, ' ')
+                .replace(/<[p|div]\s/ig, '\n$0')
+                .replace(/(<([^>]+)>)/ig,"");
+        },
+
+        random : function(n){
+            var s = '';
+
+            while( n-- ){
+                s += Math.random().toString(36).substring(7);
+            }
+
+            return s;
+        }
+    };
+
+    (function(){
+        $(document)
+            .on('keydown.editable input.editable' , '.editable', onInput)
+            .on('paste'                           , '.editable', onPaste)
+            .on('focus.editable'                  , '.editable', onFocus)
+            .on('blur.editable'                   , '.editable', onFocus);
+
+            function onInput(e){
+                var el = $(this);
+
+                if( el.hasClass('singleline') && e.keyCode === 13 )
+                    return false;
+
+                if( el.text() )
+                    el.addClass('filled');
+            }
+
+            function onFocus(){
+                if( !string.normalizeContentEditable(this.innerHTML).trim() ){
+                    this.innerHTML = '';
+                    $(this).removeClass('filled');
+                }
+            }
+
+            function onPaste(e){
+                var content;
+
+                e.preventDefault();
+
+                if( e.originalEvent.clipboardData ){
+                    content = (e.originalEvent || e).clipboardData.getData('text/plain');
+                    document.execCommand('insertText', false, content);
+                }
+                else if( window.clipboardData ){
+                    content = window.clipboardData.getData('Text');
+                    var newNode = document.createTextNode(content);
+
+                    if (window.getSelection)
+                       window.getSelection().getRangeAt(0).insertNode(newNode);
+                }
+            }
+    })();
+
     /////////////////////////////////
     // Global cached DOM elements
 
@@ -13159,29 +13225,6 @@
     lodash.prototype.head = lodash.prototype.first;
     lodash.prototype.select = lodash.prototype.filter;
     lodash.prototype.tail = lodash.prototype.rest;
-
-    var string = {
-        normalizeContentEditable : function(s){
-            if( !s )
-                return '';
-
-            return s.trim()
-                .replace(/<br(\s*)\/*>/ig, '\n')
-                .replace(/&nbsp;/ig, ' ')
-                .replace(/<[p|div]\s/ig, '\n$0')
-                .replace(/(<([^>]+)>)/ig,"");
-        },
-
-        random : function(n){
-            var s = '';
-
-            while( n-- ){
-                s += Math.random().toString(36).substring(7);
-            }
-
-            return s;
-        }
-    };
 
     // log if any DOM elemtn wasn't cached
     function checkDOMbinding(DOM){
