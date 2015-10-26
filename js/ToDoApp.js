@@ -4,6 +4,7 @@
     factory();
 }(this, function () { 'use strict';
 
+    // Change all checkboxes in the page to their "default" state
     function defaultCheckboxes(){
         var allInputs = document.querySelectorAll('input');
 
@@ -15,150 +16,6 @@
                 input.value = input.defaultValue;
         });
     }
-
-    // log if any DOM elemtn wasn't cached
-    function checkDOMbinding(DOM){
-        for( var i in DOM ){
-            if( !DOM[i] ){
-                console.log( Function.caller, i, ' - DOM reference empty' );
-            }
-        }
-    }
-
-
-    function randomString(n){
-        var s = '';
-
-        while( n-- ){
-            s += Math.random().toString(36).substring(7);
-        }
-
-        return s;
-    }
-
-
-    var string = {
-        normalizeContentEditable : function(s){
-            if( !s )
-                return '';
-
-            return s.trim()
-                .replace(/<br(\s*)\/*>/ig, '\n')
-                .replace(/&nbsp;/ig, ' ')
-                .replace(/<[p|div]\s/ig, '\n$0')
-                .replace(/(<([^>]+)>)/ig,"");
-        }
-    }
-
-
-
-    var isMobile = $(document.documentElement).hasClass('mobile');
-    var isTouch  = $(document.documentElement).hasClass('touch');
-    var support = {
-        fullscreen : (function(){
-            var docElm = document.documentElement;
-            return  'requestFullscreen' in docElm ||
-                    'mozRequestFullScreen' in docElm ||
-                    'webkitRequestFullScreen' in docElm;
-        })()
-    }
-
-
-
-    var Task = (function(){
-        function Task(settings){
-            if( !settings.el ) return;
-
-            this.el           = settings.el;
-            this.initialValue = this.el.innerHTML|0;
-            this.toValue      = this.el.getAttribute('data-to') || settings.toValue;
-            this.delta        = this.toValue - this.initialValue;
-            this.easing       = settings.easingFunc || function(t){ return t };
-
-
-            // Do-in settings object
-            var doinSettings = {
-                step     : this.step.bind(this),
-                duration : settings.duration,
-                done     : this.done.bind(this)
-            };
-
-            if( settings.fps )
-               doinSettings.fps = settings.fps;
-
-            // create an instance of Do-in
-            this.doin = new Doin(doinSettings);
-            this.doin.run();
-        }
-
-        Task.prototype.nf = new Intl.NumberFormat();
-
-        // a step of the thing we want to do
-        Task.prototype.step = function(t, elapsed){
-            // easing
-            t = this.easing(t);
-
-            // calculate new value
-            var value = this.delta * t + this.initialValue;
-
-            // limit value
-            if( t > 0.999 )
-                value = this.toValue;
-
-            // print value
-            this.el.innerHTML = this.nf.format(value|0);
-        }
-
-        // on DONE
-        Task.prototype.done = function(){
-            // console.log(this.el, 'done counting!');
-        }
-
-        return Task;
-    })();
-
-    (function(){
-        $(document)
-            .on('keydown.editable input.editable' , '.editable', onInput)
-            .on('paste'                           , '.editable', onPaste)
-            .on('focus.editable'                  , '.editable', onFocus)
-            .on('blur.editable'                   , '.editable', onFocus);
-
-            function onInput(e){
-                var el = $(this);
-
-                if( el.hasClass('singleline') && e.keyCode === 13 )
-                    return false;
-
-                if( el.text() )
-                    el.addClass('filled');
-            }
-
-            function onFocus(){
-                if( !string.normalizeContentEditable(this.innerHTML).trim() ){
-                    this.innerHTML = '';
-                    $(this).removeClass('filled');
-                }
-            }
-
-            function onPaste(e){
-                var content;
-
-                e.preventDefault();
-
-                if( e.originalEvent.clipboardData ){
-                    content = (e.originalEvent || e).clipboardData.getData('text/plain');
-                    document.execCommand('insertText', false, content);
-                }
-                else if( window.clipboardData ){
-                    content = window.clipboardData.getData('Text');
-                    var newNode = document.createTextNode(content);
-
-                    if (window.getSelection)
-                       window.getSelection().getRangeAt(0).insertNode(newNode);
-                }
-            }
-    })();
 
     /////////////////////////////////
     // Global cached DOM elements
@@ -430,7 +287,7 @@
      * @memberOf _
      * @type Object
      */
-    var support$1 = {};
+    var support = {};
 
     (function(x) {
       var Ctor = function() { this.x = x; },
@@ -447,7 +304,7 @@
        * @memberOf _.support
        * @type boolean
        */
-      support$1.enumErrorProps = propertyIsEnumerable.call(errorProto, 'message') ||
+      support.enumErrorProps = propertyIsEnumerable.call(errorProto, 'message') ||
         propertyIsEnumerable.call(errorProto, 'name');
 
       /**
@@ -461,7 +318,7 @@
        * @memberOf _.support
        * @type boolean
        */
-      support$1.enumPrototypes = propertyIsEnumerable.call(Ctor, 'prototype');
+      support.enumPrototypes = propertyIsEnumerable.call(Ctor, 'prototype');
 
       /**
        * Detect if properties shadowing those on `Object.prototype` are non-enumerable.
@@ -472,7 +329,7 @@
        * @memberOf _.support
        * @type boolean
        */
-      support$1.nonEnumShadows = !/valueOf/.test(props);
+      support.nonEnumShadows = !/valueOf/.test(props);
 
       /**
        * Detect if own properties are iterated after inherited properties (IE < 9).
@@ -480,7 +337,7 @@
        * @memberOf _.support
        * @type boolean
        */
-      support$1.ownLast = props[0] != 'x';
+      support.ownLast = props[0] != 'x';
 
       /**
        * Detect if `Array#shift` and `Array#splice` augment array-like objects
@@ -495,7 +352,7 @@
        * @memberOf _.support
        * @type boolean
        */
-      support$1.spliceObjects = (splice$1.call(object, 0, 1), !object[0]);
+      support.spliceObjects = (splice$1.call(object, 0, 1), !object[0]);
 
       /**
        * Detect lack of support for accessing string characters by index.
@@ -506,7 +363,7 @@
        * @memberOf _.support
        * @type boolean
        */
-      support$1.unindexedChars = ('x'[0] + Object('x')[0]) != 'xx';
+      support.unindexedChars = ('x'[0] + Object('x')[0]) != 'xx';
     }(1, 0));
 
     /**
@@ -517,7 +374,7 @@
      * @returns {Object} Returns the object.
      */
     function toObject(value) {
-      if (support$1.unindexedChars && isString(value)) {
+      if (support.unindexedChars && isString(value)) {
         var index = -1,
             length = value.length,
             result = Object(value);
@@ -778,8 +635,8 @@
           isProto = proto === object,
           result = Array(length),
           skipIndexes = length > 0,
-          skipErrorProps = support$1.enumErrorProps && (object === errorProto$1 || object instanceof Error),
-          skipProto = support$1.enumPrototypes && isFunction(object);
+          skipErrorProps = support.enumErrorProps && (object === errorProto$1 || object instanceof Error),
+          skipProto = support.enumPrototypes && isFunction(object);
 
       while (++index < length) {
         result[index] = (index + '');
@@ -796,7 +653,7 @@
           result.push(key);
         }
       }
-      if (support$1.nonEnumShadows && object !== objectProto$18) {
+      if (support.nonEnumShadows && object !== objectProto$18) {
         var tag = object === stringProto$1 ? stringTag$2 : (object === errorProto$1 ? errorTag$2 : objToString$10.call(object)),
             nonEnums = nonEnumProps[tag] || nonEnumProps[objectTag$2];
 
@@ -883,7 +740,7 @@
     var keys = !nativeKeys ? shimKeys : function(object) {
       var Ctor = object == null ? undefined : object.constructor;
       if ((typeof Ctor == 'function' && Ctor.prototype === object) ||
-          (typeof object == 'function' ? support$1.enumPrototypes : isArrayLike(object))) {
+          (typeof object == 'function' ? support.enumPrototypes : isArrayLike(object))) {
         return shimKeys(object);
       }
       return isObject(object) ? nativeKeys(object) : [];
@@ -4689,7 +4546,7 @@
       // iterated property is an object's own property then there are no inherited
       // enumerable properties.
       var result;
-      if (support$1.ownLast) {
+      if (support.ownLast) {
         baseForIn(value, function(subValue, key, object) {
           result = hasOwnProperty$5.call(object, key);
           return false;
@@ -5926,7 +5783,7 @@
       if (!isArrayLike(value)) {
         return values(value);
       }
-      if (support$1.unindexedChars && isString(value)) {
+      if (support.unindexedChars && isString(value)) {
         return value.split('');
       }
       return isObject(value) ? value : Object(value);
@@ -6428,7 +6285,7 @@
       if (!length) {
         return [];
       }
-      return (support$1.unindexedChars && isString(value))
+      return (support.unindexedChars && isString(value))
         ? value.split('')
         : arrayCopy(value);
     }
@@ -11872,7 +11729,7 @@
      *   };\
      * ');
      */
-    function template$1(string, options, otherOptions) {
+    function template(string, options, otherOptions) {
       // Based on John Resig's `tmpl` implementation (http://ejohn.org/blog/javascript-micro-templating/)
       // and Laura Doktorova's doT.js (https://github.com/olado/doT).
       var settings = templateSettings.imports._.templateSettings || templateSettings;
@@ -12521,7 +12378,7 @@
       'snakeCase': snakeCase,
       'startCase': startCase,
       'startsWith': startsWith,
-      'template': template$1,
+      'template': template,
       'templateSettings': templateSettings,
       'trim': trim,
       'trimLeft': trimLeft,
@@ -13083,7 +12940,7 @@
      */
     lodash.VERSION = VERSION;
 
-    lodash.support = support$1;
+    lodash.support = support;
     (lodash.templateSettings = string$1.templateSettings).imports._ = lodash;
 
     // Assign default placeholders.
@@ -13246,7 +13103,7 @@
     arrayEach(['join', 'pop', 'push', 'replace', 'shift', 'sort', 'splice', 'split', 'unshift'], function(methodName) {
       var protoFunc = (/^(?:replace|split)$/.test(methodName) ? stringProto : arrayProto)[methodName],
           chainName = /^(?:push|sort|unshift)$/.test(methodName) ? 'tap' : 'thru',
-          fixObjects = !support$1.spliceObjects && /^(?:pop|shift|splice)$/.test(methodName),
+          fixObjects = !support.spliceObjects && /^(?:pop|shift|splice)$/.test(methodName),
           retUnwrapped = /^(?:join|pop|replace|shift)$/.test(methodName);
 
       // Avoid array-like object bugs with `Array#shift` and `Array#splice` in
@@ -13303,6 +13160,38 @@
     lodash.prototype.select = lodash.prototype.filter;
     lodash.prototype.tail = lodash.prototype.rest;
 
+    var string = {
+        normalizeContentEditable : function(s){
+            if( !s )
+                return '';
+
+            return s.trim()
+                .replace(/<br(\s*)\/*>/ig, '\n')
+                .replace(/&nbsp;/ig, ' ')
+                .replace(/<[p|div]\s/ig, '\n$0')
+                .replace(/(<([^>]+)>)/ig,"");
+        },
+
+        random : function(n){
+            var s = '';
+
+            while( n-- ){
+                s += Math.random().toString(36).substring(7);
+            }
+
+            return s;
+        }
+    };
+
+    // log if any DOM elemtn wasn't cached
+    function checkDOMbinding(DOM){
+        for( var i in DOM ){
+            if( !DOM[i] ){
+                console.log( Function.caller, i, ' - DOM reference empty' );
+            }
+        }
+    }
+
     // "To-Do list" component controller
 
     function ToDoList(settings){
@@ -13310,7 +13199,7 @@
         // extend default settings
         this.settings = $.extend(
                         true,
-                        { namespace:'ToDoComponent', id:randomString(1) }
+                        { namespace:'ToDoComponent', id:string.random(1) }
                         , settings );
         this.DOM = {}; // any instance's cached DOM elements will be here
         this.items = [];
@@ -13674,7 +13563,7 @@
         toDo: toDo
     });
 
-    (function(){
+    (function() {
         // development flag,
         //DEV : window.location.hostname == 'localhost',
 
@@ -13693,7 +13582,7 @@
 
         // on page load, before page routes are triggered
         function preRoutes(){
-            defaultCheckboxes(); // Default back every checkbox and input on the page which might have changed by the user
+            defaultCheckboxes();
         }
 
         // get the "data-init" from the body element, to know which initial page controller to run

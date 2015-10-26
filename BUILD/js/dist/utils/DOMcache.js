@@ -1,9 +1,11 @@
 /////////////////////////////////
 // Global cached DOM elements
 
-export default {
+var DOM = {
     $HTML : $(document.documentElement),
     $DOC  : $(document),
     $WIN  : $(window),
     $BODY : $(document.body)
 }
+
+export default DOM;

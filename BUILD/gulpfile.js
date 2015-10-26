@@ -78,8 +78,8 @@ gulp.task('scss', function() {
 
 //////////////////////////
 // ICOMOON (generate icons and font files from JSON)
-
-gulp.task('icomoon', shell.task(['icomoon-build -p ./fonts/selection.json --scss-with-map ./css/dist/_icomoon_output.scss --fonts ../fonts/']));
+gulp.task('icomoon', '');
+//gulp.task('icomoon', shell.task(['icomoon-build -p ./fonts/selection.json --scss-with-map ./css/dist/_icomoon_output.scss --fonts ../fonts/']));
 
 
 //////////////////////////
@@ -177,21 +177,17 @@ gulp.task('concatJS', function() {
 });
 
 
+gulp.task('combineControllers', function() {
+    // combine all page controllers
+    gulp.src('./js/dist/pages/**/*.js')
+        .pipe(concat('controllers_bundle.js'))
+        .pipe(gulp.dest('./js/dist/auto-generated'))
+});
 
 gulp.task('bundleJS', function() {
     fs.truncate('../js/ToDoApp.js', 0, function() {
         console.log('emptied "ToDoApp.js" file')
     });
-
-    // combine all components
-    // gulp.src('./js/dist/components/**/*.js')
-    //     .pipe(concat('components_bundle.js'))
-    //     .pipe(gulp.dest('./js/dist/'))
-
-    // combine all page controllers
-    gulp.src('./js/dist/pages/**/*.js')
-        .pipe(concat('controllers_bundle.js'))
-        .pipe(gulp.dest('./js/dist/auto-generated'))
 
     gulp.src('js/dist/app.js', {read: false})
         //.pipe(rollup({format: 'amd'}))
@@ -208,6 +204,7 @@ gulp.task('bundleJS', function() {
 
 
 // build App scripts
+// DEPRECATED
 gulp.task('buildJS', function() {
     var src = [
         './js/dist/app.js',
@@ -351,16 +348,17 @@ gulp.task('set-prod', function() {
 
 gulp.task('prod', ['set-prod', 'default', 'compress']); // generate code for production-only
 
-gulp.task('default', [ 'icomoon', 'scss', 'spriteLoop', 'templates', 'concatJS', 'bundleJS', 'build_vendor_JS', 'lint', 'watch', 'webserver']);
+gulp.task('default', [ 'icomoon', 'scss', 'spriteLoop', 'templates', 'bundleJS', 'build_vendor_JS', 'lint', 'watch', 'webserver']);
 
 gulp.task('watch', function() {
     //    gulp.watch('./views/modals/*.html', ['modals']);
     //gulp.watch('./images/sprite/**/*.png', ['sprite']);
     gulp.watch('./css/dist/**/*.scss', ['scss']);
     // gulp.watch('./css/dist/voting/**/*.scss', ['voting_styles']); // voting system styles
-    gulp.watch('./templates/**/*.html', ['templates']);
-    gulp.watch('./js/concatenated/*.js', ['concatJS']);
-    gulp.watch(['./js/dist/*.js', './js/dist/components/**/*.js', './js/dist/helpers/*.js', './js/dist/pages/**/*.js', './js/dist/vendor/**/*.js'], ['bundleJS', 'lint']);
+    gulp.watch('./templates/**/*.html', ['templates', 'bundleJS']);
+    //gulp.watch('./js/concatenated/*.js', ['concatJS']);
+    gulp.watch(['./js/dist/pages/**/*.js'], ['combineControllers', 'bundleJS']);
+    gulp.watch(['./js/dist/*.js', './js/dist/components/**/*.js', './js/dist/utils/*.js', './js/dist/vendor/**/*.js'], ['bundleJS', 'lint']);
     gulp.watch('./js/vendor/**/*.js', ['build_vendor_JS']);
     gulp.watch('./fonts/selection.json', ['icomoon']);
     // Watch .js files

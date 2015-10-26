@@ -1,4 +1,5 @@
-import * as utilities from '../utilities';
+import string from '../utils/string';
+import checkDOMbinding from '../utils/checkDOMbinding';
 import * as templates from '../auto-generated/templates';
 import _ from '../vendor/lodash/lodash';
 
@@ -9,7 +10,7 @@ export default function ToDoList(settings){
     // extend default settings
     this.settings = $.extend(
                     true,
-                    { namespace:'ToDoComponent', id:utilities.randomString(1) }
+                    { namespace:'ToDoComponent', id:string.random(1) }
                     , settings );
     this.DOM = {}; // any instance's cached DOM elements will be here
     this.items = [];
@@ -53,7 +54,7 @@ ToDoList.prototype = {
         DOM.filter         = scope.find('.filter');
 
         // make sure every DOM node was found
-        utilities.checkDOMbinding(DOM);
+        checkDOMbinding(DOM);
     },
 
 
@@ -206,7 +207,7 @@ ToDoList.prototype = {
                 // add item if "ENTER" key was pressed without "SHIFT" key
                 if( e.keyCode == 13 && !e.shiftKey ){
                     var item = {
-                            text      : utilities.string.normalizeContentEditable(input.innerHTML).trim(),
+                            text      : string.normalizeContentEditable(input.innerHTML).trim(),
                             checked   : false,
                             timestamp : new Date().getTime()
                         };

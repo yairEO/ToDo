@@ -1,4 +1,4 @@
-import * as utilities from '../utilities';
+import string from './string';
 
 export default (function(){
     $(document)
@@ -18,7 +18,7 @@ export default (function(){
         }
 
         function onFocus(){
-            if( !utilities.string.normalizeContentEditable(this.innerHTML).trim() ){
+            if( !string.normalizeContentEditable(this.innerHTML).trim() ){
                 this.innerHTML = '';
                 $(this).removeClass('filled');
             }

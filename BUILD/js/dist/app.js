@@ -1,9 +1,8 @@
-import './helpers';
-import DOM from './helpers/DOMcache';
-import * as utilities from './utilities';
+import defaultCheckboxes from './utils/defaultCheckboxes';
+import DOM from './utils/DOMcache';
 import * as controllers from './auto-generated/controllers_bundle';
 
-(function(){
+(function() {
     // development flag,
     //DEV : window.location.hostname == 'localhost',
 
@@ -22,7 +21,7 @@ import * as controllers from './auto-generated/controllers_bundle';
 
     // on page load, before page routes are triggered
     function preRoutes(){
-        utilities.defaultCheckboxes(); // Default back every checkbox and input on the page which might have changed by the user
+        defaultCheckboxes();
     }
 
     // get the "data-init" from the body element, to know which initial page controller to run

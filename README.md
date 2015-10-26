@@ -5,8 +5,8 @@
 ### Directory & files structure
 
     Should run:
-
-    C:\xampp\htdocs\ToDo\BUILD\js\vendor\lodash modularize exports=es settings={interpolate: /\{\{\=(.+?)\}\}/g, escape: /\{\{\-(.+?)\}\}/g, evaluate: /\{\{(.+?)\}\}/g }"
+    > npm i -g lodash-cli
+    > lodash modularize exports=es settings={interpolate: /\{\{\=(.+?)\}\}/g, escape: /\{\{\-(.+?)\}\}/g, evaluate: /\{\{(.+?)\}\}/g }"
 
 
 
