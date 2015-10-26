@@ -1,4 +1,5 @@
 import ToDoList from '../components/component.toDo';
+import _ from '../vendor/lodash/lodash';
 
 export function toDo(){
     "use strict";

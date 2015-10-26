@@ -13609,7 +13609,7 @@
 
                     // remove localStorage traces
                     delete window.localStorage['ToDo__' + instance.settings.id];
-                    componentsLoader.ToDo.storage.listsIDs = _.without(componentsLoader.ToDo.storage.listsIDs, instance.settings.id);
+                    componentsLoader.ToDo.storage.listsIDs = lodash.without(componentsLoader.ToDo.storage.listsIDs, instance.settings.id);
                     componentsLoader.ToDo.storage.set();
 
                     // remove the actual DOM node
@@ -13674,14 +13674,14 @@
         toDo: toDo
     });
 
-    const ToDoApp$1 = {
+    (function(){
         // development flag,
-        DEV : window.location.hostname == 'localhost',
+        //DEV : window.location.hostname == 'localhost',
 
-        events : {
+        var events = {
     	   // high-level events binding goes here
             bind : function(){
-                DOM.$WIN.on('beforeunload', ToDoApp$1.events.callbacks.beforeunload);
+                DOM.$WIN.on('beforeunload', events.callbacks.beforeunload);
             },
 
             callbacks : {
@@ -13689,45 +13689,29 @@
                     DOM.$BODY.addClass('loading');
                 }
             }
-        },
-
+        }
 
         // on page load, before page routes are triggered
-        preRoutes : function(){
-            // _.templateSettings = {
-            //     interpolate : /\{\{\=(.+?)\}\}/g,
-            //     escape      : /\{\{\-(.+?)\}\}/g,
-            //     evaluate    : /\{\{(.+?)\}\}/g
-            // };
-
+        function preRoutes(){
             defaultCheckboxes(); // Default back every checkbox and input on the page which might have changed by the user
-        },
-
-        //
-        routes : {
-            modal : {},   // all website modals controlelrs should be under this scope
-
-            // Execute the page controller of the current page
-            initPage : function(){
-                var routes = $(document.body).data('init');
-
-                if( controllers[routes] )
-                    controllers[routes]();
-                //utilities.matchRoute(routes);
-            }
-        },
-
-
-        init : function(){
-            // if social connect is neeed, toggle it
-            // ToDoApp.connect();
-
-    		ToDoApp$1.events.bind();
-            ToDoApp$1.preRoutes();
-            ToDoApp$1.routes.initPage();
         }
-    };
 
-    ToDoApp$1.init();
+        // get the "data-init" from the body element, to know which initial page controller to run
+        function initPage(){
+            var routes = $(document.body).data('init');
+
+            if( controllers[routes] )
+                controllers[routes]();
+        }
+
+
+        function init(){
+    		events.bind();
+            preRoutes();
+            initPage();
+        }
+
+        init();
+    })();
 
 }));
