@@ -26,6 +26,7 @@ import Router from './vendor/router';
                 events.callbacks.filterAllLists('active');
             })
             .add(/ToDo/, function(){
+                events.callbacks.filterAllLists('all');
             })
             .add(function() {
                 // for unkown routes, navigate back to root
