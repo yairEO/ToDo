@@ -1,6 +1,6 @@
 // Typography
 $typography : (
-    font-family    : "Roboto, Arial, sans-serif",
+    font-family    : (Roboto, Arial, sans-serif),
     base-font-size : 14px
 );
 
@@ -23,6 +23,7 @@ $colors : (
 
     white     : #FFF,
     yellow    : #E5C834,
+    gold      : gold,
     pink      : #FF3F71,
     green     : #56BC5D,
     blue      : #37B1E5,

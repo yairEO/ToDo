@@ -1,0 +1,48 @@
+var chai = require('chai'),
+    expect = chai.expect,
+    should = chai.should(),
+    jsdom = require('jsdom'),
+    window = jsdom.jsdom().defaultView;
+    // jQuery = require('jQuery').create(myWindow);
+
+///////////////////////////
+
+import ToDoList from '../js/dist/components/component.toDo.js';
+
+describe('ToDo list', () => {
+    it('should add an item to the list', (done) => {
+        jsdom.jQueryify(window, "../js/vendor/jquery.min.js", function(){
+            var toDoList = new ToDoList();
+            console.log(toDoList);
+            //(!!1).should.be.true;
+
+
+            done();
+        });
+
+
+
+        // jsdom.env({
+        //     html: '<html><body></body></html>',
+        //     scripts: ["../js/vendor/jquery.min.js"],
+        //     done: function (err, window) {
+        //         var $ = window.jQuery;
+        //         console.log("loaded"); // never gets called
+
+        //         var toDoList = new ToDoList();
+        //         done();
+        //     }
+        // });
+        //console.log($);
+
+    })
+
+    it('should remove an item from the list');
+    it('should mark a list item as "done"');
+    it('should clear all "done" items');
+    it('should normalize item input');
+    it('should filter by "active"');
+    it('should filter by "completed"');
+    it('should select all items');
+});
+

@@ -76,7 +76,11 @@ export function toDo(){
             addList : function(id){
                 var instance = new ToDoList(id ? { id: id } : null);
                 componentsLoader.ToDo.instances.push( instance );
+                // init the instance of a ToDo component
+                instance.init();
+                // add instance DOM template to the page DOM
                 DOM.ToDoWrap.append( instance.DOM.scope );
+
                 return instance;
             },
 
@@ -106,6 +110,7 @@ export function toDo(){
 
     // public
     return {
-        components : componentsLoader
+        components : componentsLoader,
+        events     : events
     }
 }

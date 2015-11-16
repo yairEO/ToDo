@@ -83,7 +83,10 @@
     }
 
     &__items-left{
+        display: inline-block;
         &::before{ content:attr(data-items-left); margin-right:.2em; }
+        // for Singular noun, hide the "s" in "items"
+        &[data-items-left="1"] span{ display:none; }
     }
 
     &__list:empty ~ &__footer{ position:absolute; left:-9999px; }
@@ -111,9 +114,9 @@
                 z-index: 1;
                 color: C(gray1);
                 cursor: pointer;
-                border-radius: 8px;
+                border-radius: 4px;
                 &.active{
-                    background: rgba(black, .1);
+                    background: rgba(gold, .8);
                     font-weight: 700;
                 }
             }

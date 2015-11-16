@@ -3,18 +3,20 @@ import checkDOMbinding from '../utils/checkDOMbinding';
 import * as templates from '../auto-generated/templates';
 import _ from '../vendor/lodash/lodash';
 
+
 // "To-Do list" component controller
 
-export default function ToDoList(settings){
+export default function ToDoList(settings = {}){
     "use strict";
+
     // extend default settings
     this.settings = $.extend(
                     true,
                     { namespace:'ToDoComponent', id:string.random(1) }
                     , settings );
+
     this.DOM = {}; // any instance's cached DOM elements will be here
     this.items = [];
-    this.init();
 };
 
 ToDoList.prototype = {
@@ -24,7 +26,6 @@ ToDoList.prototype = {
         this.DOM.scope.data('component', this); // save scope on top DOM node
 
         this.populateDOM(this.DOM, this.DOM.scope);
-
         // bind component events
         this.events.bind.call(this, this.DOM);
 
@@ -77,55 +78,56 @@ ToDoList.prototype = {
         }
     },
 
+    onModelChange : function(){
+        this.storage.set.call(this);
+        this.itemsLeftCounter();
+    },
 
-
-    // adds an itel to the bottom of the list
+    // adds an item(s)
     addItem : function(items){
-        if( !items.length ) return;
+        if( !items || !items.length ) return false;
 
         // add item to state
         this.items = this.items.concat(items);
-        this.storage.set.call(this);
 
         // render a single item
         var newItem = this.templates.listItem({ items:items });
 
         // add rendered item to the list of items
         this.DOM.ToDoList.append(newItem);
-        this.itemsLeftCounter();
 
         // if for some reasom the "seclect all" checkbox was "checked", "uncheck" it
         this.DOM.selectAll.prop('checked', false);
         this.DOM.scope.addClass('hasItems');
+
+        this.onModelChange();
+
+        return newItem;
     },
 
     // remove a list item
-    removeItem : function(itemToRemove){
+    removeItem : function(idx){
         var that = this;
+        this.items.splice(idx, 1);
+        this.onModelChange();
+        this.removeItemFromDOM( this.DOM.ToDoList.children().eq(idx) );
+    },
 
+    removeItemFromDOM : function(itemToRemove){
+        var that = this;
         itemToRemove.slideUp(200, function(){
             itemToRemove.remove();
             that.listCleanup();
         });
-
-        // this.items = _.filter(this.items, function(item){
-        //     return item.timestamp != itemToRemove.data('timestamp');
-        // });
-
-        this.items.splice(itemToRemove.index(), 1);
-        this.itemsLeftCounter();
-
-        this.storage.set.call(this);
     },
 
     // marks an item as completed
     markItem : function(item, state){
         item.toggleClass('completed', state);
-        this.itemsLeftCounter();
 
         // update state
         this.items[item.index()].checked = state;
-        this.storage.set.call(this);
+        this.onModelChange();
     },
 
     clearCompleted : function(){
@@ -146,9 +148,7 @@ ToDoList.prototype = {
         });
 
         this.DOM.selectAll.prop('checked', false);
-        this.itemsLeftCounter();
-
-        this.storage.set.call(this);
+        this.onModelChange();
     },
 
     // traverse to closest list item from some child element and return it
@@ -241,7 +241,7 @@ ToDoList.prototype = {
                     if( text )
                         input.innerHTML = text;
                     else
-                        this.removeItem( this.getListItem.call(this, input) );
+                        this.removeItem( this.getListItem.call(this, input).index() );
 
 
                     // save state
@@ -256,7 +256,7 @@ ToDoList.prototype = {
 
             removeItem : function(e){
                 var item = this.getListItem.call(this, e.target);
-                this.removeItem(item);
+                this.removeItem( item.index() );
             },
 
             toggleItem : function(e){

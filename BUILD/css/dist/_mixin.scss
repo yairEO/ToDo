@@ -12,7 +12,7 @@
 }
 
 @function typography($key:"") {
-    @return unquote(mg($typography, $key));
+    @return mg($typography, $key);
 }
 
 @function layout($key:"") {

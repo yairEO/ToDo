@@ -14,7 +14,7 @@ import Router from './vendor/router';
     }
 
     function routes(){
-        // since there is only one page, it will be invoked as the default and only one:
+        // The first (and default) state of the application will the set as the To-Do controller
         state.controller = controllers['toDo']();
 
         Router

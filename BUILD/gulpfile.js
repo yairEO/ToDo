@@ -1,5 +1,6 @@
 var gulp         = require('gulp'),
     gutil        = require('gulp-util'),
+    cache        = require('gulp-cached'),
     watch        = require('gulp-watch'),
     webserver    = require('gulp-webserver'),
     rollup       = require('gulp-rollup'),
@@ -7,7 +8,7 @@ var gulp         = require('gulp'),
     sourcemaps   = require('gulp-sourcemaps'),
     sass         = require('gulp-sass'),
     cssGlobbing  = require('gulp-css-globbing'),
-    cmq          = require('gulp-combine-media-queries'),
+    combineMq    = require('gulp-combine-mq'),
     autoprefixer = require('gulp-autoprefixer'),
     cssshrink    = require('gulp-cssshrink'),
     uglify       = require('gulp-uglify'),
@@ -24,7 +25,6 @@ var gulp         = require('gulp'),
     fs           = require('fs'),
     es           = require('event-stream'),
     insert       = require('gulp-insert');
-
 
 var config = {
         namespace : 'ToDoApp',
@@ -66,7 +66,7 @@ gulp.task('scss', function() {
             // https://github.com/gulpjs/gulp/issues/259
             .on('error', sass.logError)
         )
-        .pipe(cmq()) // combine media queries
+        .pipe(combineMq()) // combine media queries
         .pipe(autoprefixer())
         .pipe(gulp.dest('../css'))
         //.pipe(rename({suffix: '.min'}))
@@ -246,6 +246,64 @@ gulp.task('build_vendor_JS', function() {
 
 
 
+
+
+//////////////////////////////////////////
+
+gulp.task('tests', function(){
+    gulp.src('./tests/dist/*.js', {read: false})
+        .pipe(rollup({
+            format : 'umd'
+        }))
+        .pipe(babel({
+            presets: ['es2015']
+        }).on('error', function(err){ console.log(err.message) }))
+
+        .pipe(gulp.dest('./tests/'))
+
+
+    // gulp.src('./tests/dist/*.js')
+    //     .pipe(babel({
+    //         presets: ['es2015']
+    //     }).on('error', function(err){ console.log(err.message) }))
+    //     .pipe(gulp.dest('./tests/'))
+});
+
+gulp.task('tests-lint', function () {
+    return gulp.src(['./tests/dist/*.js'])
+        // eslint() attaches the lint output to the eslint property
+        // of the file object so it can be used by other modules.
+        .pipe(cache('tests-linting'))
+        .pipe(eslint({
+            rulePaths: [],
+            rules: {
+                'strict': 0,
+            },
+            ecmaFeatures : {
+                modules: true
+            },
+            globals: {
+                'jQuery':true,
+                '$':true
+            },
+            baseConfig: {
+                //parser: 'babel-eslint',
+            },
+            envs: [
+                'browser', 'es6'
+            ]
+        }))
+        // eslint.format() outputs the lint results to the console.
+        // Alternatively use eslint.formatEach() (see Docs).
+        .pipe(eslint.format())
+        // To have the process exit with an error code (1) on
+        // lint error, return the stream and pipe to failAfterError last.
+        .pipe(eslint.failAfterError());
+});
+
+
+
+
 //////////////////////////////
 // PRODUCTION ONLY
 
@@ -306,10 +364,15 @@ gulp.task('compress', function() {
 
 
 gulp.task('lint', function () {
-    return;
-    return gulp.src(['./js/**/*.js'])
+    return gulp.src(['./js/dist/*.js',
+                    './js/dist/components/**/*.js',
+                    './js/dist/modals/**/*.js',
+                    './js/dist/pages/**/*.js',
+                    './js/dist/utils/**/*.js'
+                    ])
         // eslint() attaches the lint output to the eslint property
         // of the file object so it can be used by other modules.
+        .pipe(cache('linting'))
         .pipe(eslint({
             rulePaths: [
             ],
@@ -348,7 +411,7 @@ gulp.task('set-prod', function() {
 
 gulp.task('prod', ['set-prod', 'default', 'compress']); // generate code for production-only
 
-gulp.task('default', [ 'icomoon', 'scss', 'spriteLoop', 'templates', 'bundleJS', 'build_vendor_JS', 'lint', 'watch', 'webserver']);
+gulp.task('default', [ 'icomoon', 'scss', 'spriteLoop', 'templates', 'bundleJS', 'build_vendor_JS', 'lint', 'watch', 'webserver', 'tests']);
 
 gulp.task('watch', function() {
     //    gulp.watch('./views/modals/*.html', ['modals']);
@@ -361,6 +424,7 @@ gulp.task('watch', function() {
     gulp.watch(['./js/dist/*.js', './js/dist/components/**/*.js', './js/dist/utils/*.js', './js/dist/vendor/**/*.js'], ['bundleJS', 'lint']);
     gulp.watch('./js/vendor/**/*.js', ['build_vendor_JS']);
     gulp.watch('./fonts/selection.json', ['icomoon']);
+    gulp.watch('./tests/dist/*.js', ['tests', 'tests-lint']);
     // Watch .js files
     //gulp.watch('src/scripts/**/*.js', ['scripts']);
 });

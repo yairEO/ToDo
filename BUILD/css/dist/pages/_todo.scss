@@ -12,12 +12,12 @@
             > a{
                 display: inline-block;
                 margin: 0 2px;
-                padding: .5em;
+                padding: .5em .7em .4em;
                 position: relative;
                 z-index: 1;
                 color: C(gray4);
                 cursor: pointer;
-                border-radius: 8px;
+                border-radius: 4px;
                 text-decoration: none;
                 &.active{
                     background: rgba(white, .2);

@@ -1,7 +1,7 @@
 {{ items.forEach(function(item, i){ }}
 <li class='ToDoComponent__item {{= item.checked ? "completed" : "" }}' data-timestamp='{{= item.timestamp }}'>
     <label>
-        <input type='checkbox' class="toggleItem" {{= item.checked ? 'checked' : '' }}>
+        <input type='checkbox' class='toggleItem' {{= item.checked ? 'checked' : '' }}>
     </label>
     <span class='ToDoComponent__item__text editable' contenteditable>{{= item.text }}</span>
     <button class='ToDoComponent__item__remove' title='Remove item from list'>&times;</button>
