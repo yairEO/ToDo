@@ -83,6 +83,10 @@ ToDoList.prototype = {
         this.itemsLeftCounter();
     },
 
+    getItemByIndex : function(idx){
+        return this.DOM.ToDoList.children().eq(idx);
+    },
+
     // adds an item(s)
     addItem : function(items){
         if( !items || !items.length ) return false;
@@ -110,7 +114,7 @@ ToDoList.prototype = {
         var that = this;
         this.items.splice(idx, 1);
         this.onModelChange();
-        this.removeItemFromDOM( this.DOM.ToDoList.children().eq(idx) );
+        this.removeItemFromDOM( this.getItemByIndex(idx) );
     },
 
     removeItemFromDOM : function(itemToRemove){
@@ -122,11 +126,18 @@ ToDoList.prototype = {
     },
 
     // marks an item as completed
-    markItem : function(item, state){
-        item.toggleClass('completed', state);
+    markItem : function(idx, state){
+        if( typeof idx == 'undefined' || !this.items[idx] || typeof state != 'boolean' ){
+            console.warn('parameters are not valid');
+            return false;
+        }
 
         // update state
-        this.items[item.index()].checked = state;
+        this.items[idx].checked = state;
+
+        // (un)check the input and toggle a class
+        this.getItemByIndex(idx).toggleClass('completed', state).find(':checkbox')[0].checked = state;
+        // update model
         this.onModelChange();
     },
 
@@ -261,14 +272,14 @@ ToDoList.prototype = {
 
             toggleItem : function(e){
                 var item = this.getListItem.call(this, e.target);
-                this.markItem(item, e.target.checked);
+                this.markItem(item.index(), e.target.checked);
             },
 
             toggleAllItems : function(e){
                 var that = this;
                 this.DOM.ToDoList.find('.toggleItem').prop('checked', e.target.checked);
                 this.DOM.ToDoList.children().each(function(){
-                    that.markItem($(this), e.target.checked);
+                    that.markItem( $(this).index(), e.target.checked );
                 })
             },
 

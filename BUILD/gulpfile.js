@@ -421,7 +421,7 @@ gulp.task('watch', function() {
     gulp.watch('./templates/**/*.html', ['templates', 'bundleJS']);
     //gulp.watch('./js/concatenated/*.js', ['concatJS']);
     gulp.watch(['./js/dist/pages/**/*.js'], ['combineControllers', 'bundleJS']);
-    gulp.watch(['./js/dist/*.js', './js/dist/components/**/*.js', './js/dist/utils/*.js', './js/dist/vendor/**/*.js'], ['bundleJS', 'lint']);
+    gulp.watch(['./js/dist/*.js', './js/dist/components/**/*.js', './js/dist/utils/*.js', './js/dist/vendor/**/*.js'], ['bundleJS', 'tests', 'lint']);
     gulp.watch('./js/vendor/**/*.js', ['build_vendor_JS']);
     gulp.watch('./fonts/selection.json', ['icomoon']);
     gulp.watch('./tests/dist/*.js', ['tests', 'tests-lint']);

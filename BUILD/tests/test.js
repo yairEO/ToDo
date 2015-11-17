@@ -6865,15 +6865,17 @@ return this.DOM.scope;}, // component's temlpates
 templates:{component:lodash.template(toDo),listItem:lodash.template(list_item)}, // populate DOM object
 populateDOM:function populateDOM(DOM,scope){var namespace='.' + this.settings.namespace + '__';DOM.addToDoItem = scope.find('.addToDoItem');DOM.selectAll = scope.find('.selectAll');DOM.ToDoList = scope.find(namespace + 'list');DOM.itemsLeft = scope.find(namespace + 'items-left');DOM.clearCompleted = scope.find('.clearCompleted');DOM.selectAll = scope.find('.selectAll');DOM.filter = scope.find('.filter'); // make sure every DOM node was found
 checkDOMbinding(DOM);}, // LocalStorage manager
-storage:{set:function set(){try{window.localStorage['ToDo__' + this.settings.id] = JSON.stringify(this.items);}catch(err) {}},get:function get(){var s=window.localStorage['ToDo__' + this.settings.id];try{return JSON.parse(s);}catch(err) {}}},onModelChange:function onModelChange(){this.storage.set.call(this);this.itemsLeftCounter();}, // adds an item(s)
+storage:{set:function set(){try{window.localStorage['ToDo__' + this.settings.id] = JSON.stringify(this.items);}catch(err) {}},get:function get(){var s=window.localStorage['ToDo__' + this.settings.id];try{return JSON.parse(s);}catch(err) {}}},onModelChange:function onModelChange(){this.storage.set.call(this);this.itemsLeftCounter();},getItemByIndex:function getItemByIndex(idx){return this.DOM.ToDoList.children().eq(idx);}, // adds an item(s)
 addItem:function addItem(items){if(!items || !items.length)return false; // add item to state
 this.items = this.items.concat(items); // render a single item
 var newItem=this.templates.listItem({items:items}); // add rendered item to the list of items
 this.DOM.ToDoList.append(newItem); // if for some reasom the "seclect all" checkbox was "checked", "uncheck" it
 this.DOM.selectAll.prop('checked',false);this.DOM.scope.addClass('hasItems');this.onModelChange();return newItem;}, // remove a list item
-removeItem:function removeItem(idx){var that=this;this.items.splice(idx,1);this.onModelChange();this.removeItemFromDOM(this.DOM.ToDoList.children().eq(idx));},removeItemFromDOM:function removeItemFromDOM(itemToRemove){var that=this;itemToRemove.slideUp(200,function(){itemToRemove.remove();that.listCleanup();});}, // marks an item as completed
-markItem:function markItem(item,state){item.toggleClass('completed',state); // update state
-this.items[item.index()].checked = state;this.onModelChange();},clearCompleted:function clearCompleted(){var that=this,timestamps=[];this.DOM.ToDoList.find('.completed').slideUp(200,function(){$(this).remove();that.listCleanup();}).each(function(){ // fill in all the timestamps which their items are to be removed
+removeItem:function removeItem(idx){var that=this;this.items.splice(idx,1);this.onModelChange();this.removeItemFromDOM(this.getItemByIndex(idx));},removeItemFromDOM:function removeItemFromDOM(itemToRemove){var that=this;itemToRemove.slideUp(200,function(){itemToRemove.remove();that.listCleanup();});}, // marks an item as completed
+markItem:function markItem(idx,state){if(typeof idx == 'undefined' || !this.items[idx] || typeof state != 'boolean'){console.warn('parameters are not valid');return false;} // update state
+this.items[idx].checked = state; // (un)check the input and toggle a class
+this.getItemByIndex(idx).toggleClass('completed',state).find(':checkbox')[0].checked = state; // update model
+this.onModelChange();},clearCompleted:function clearCompleted(){var that=this,timestamps=[];this.DOM.ToDoList.find('.completed').slideUp(200,function(){$(this).remove();that.listCleanup();}).each(function(){ // fill in all the timestamps which their items are to be removed
 timestamps.push(this.dataset.timestamp);}); // filter only what needs to be left, and save
 this.items = lodash.filter(this.items,function(item){return timestamps.indexOf(item.timestamp + "") == -1;});this.DOM.selectAll.prop('checked',false);this.onModelChange();}, // traverse to closest list item from some child element and return it
 getListItem:function getListItem(child){return $(child).closest('.' + this.settings.namespace + '__item');},itemsLeftCounter:function itemsLeftCounter(){var count=lodash.filter(this.items,function(item){return !item.checked;}).length;this.DOM.itemsLeft.attr('data-items-left',count);if(!count)this.DOM.scope.removeClass('hasItems');return count;}, // checks if the list has any children, and if not, make sure to remove all child nodes of all types
@@ -6886,7 +6888,9 @@ input.innerHTML = '';input.classList.remove('filled'); // input.blur(); // remov
 return false;}},editItem:function editItem(e){if(e.type == 'focusout' || e.keyCode == 13 && !e.shiftKey){var item=this.getListItem.call(this,e.target),input=e.target,text=input.innerHTML; // fix formatting for extra empty lines and spaces
 for(var i=5;i--;) {text = text.trim().replace(/^(&nbsp;)|(&nbsp;)+$/,'').replace(/^(<br>)|(<br>)+$/,'').trim();}if(text)input.innerHTML = text;else this.removeItem(this.getListItem.call(this,input).index()); // save state
 this.items[item.index()].text = text;this.storage.set.call(this);input.blur(); // remove focus
-return false;}},removeItem:function removeItem(e){var item=this.getListItem.call(this,e.target);this.removeItem(item.index());},toggleItem:function toggleItem(e){var item=this.getListItem.call(this,e.target);this.markItem(item,e.target.checked);},toggleAllItems:function toggleAllItems(e){var that=this;this.DOM.ToDoList.find('.toggleItem').prop('checked',e.target.checked);this.DOM.ToDoList.children().each(function(){that.markItem($(this),e.target.checked);});},filter:function filter(e){var value=e.target.dataset.filter;this.filter(value);}}}};describe('To-Do',function(){beforeEach(function(){this.toDo = new ToDoList();this.toDo.init();});it('should add an item to the list',function(){var minifier=function minifier(s){return s.replace(new RegExp("\>[\r\n ]+\<","g"),"><");};var item=this.toDo.addItem([{text:'aaa',checked:false,timestamp:'1447685104912'}]);item = minifier(item).replace(/(\r\n|\n|\r)/gm,"");var itemTemplate="<li class='ToDoComponent__item ' data-timestamp='1447685104912'> <label> <input type='checkbox' class='toggleItem' > </label> <span class='ToDoComponent__item__text editable' contenteditable>aaa</span> <button class='ToDoComponent__item__remove' title='Remove item from list'>&times;</button> </li>";itemTemplate = minifier(itemTemplate); ///////////////////
+return false;}},removeItem:function removeItem(e){var item=this.getListItem.call(this,e.target);this.removeItem(item.index());},toggleItem:function toggleItem(e){var item=this.getListItem.call(this,e.target);this.markItem(item.index(),e.target.checked);},toggleAllItems:function toggleAllItems(e){var that=this;this.DOM.ToDoList.find('.toggleItem').prop('checked',e.target.checked);this.DOM.ToDoList.children().each(function(){that.markItem($(this).index(),e.target.checked);});},filter:function filter(e){var value=e.target.dataset.filter;this.filter(value);}}}};describe('To-Do',function(){beforeEach(function(){this.toDo = new ToDoList();this.toDo.init();});it('should add an item to the list',function(){ ///////////////////////////
+// Preparation code
+var minifier=function minifier(s){return s.replace(new RegExp("\>[\r\n ]+\<","g"),"><");};var item=this.toDo.addItem([{text:'aaa',checked:false,timestamp:'1447685104912'}]);var itemTemplate="<li class='ToDoComponent__item ' data-timestamp='1447685104912'> <label> <input type='checkbox' class='toggleItem' > </label> <span class='ToDoComponent__item__text editable' contenteditable>aaa</span> <button class='ToDoComponent__item__remove' title='Remove item from list'>&times;</button> </li>";item = minifier(item).replace(/(\r\n|\n|\r)/gm,"");itemTemplate = minifier(itemTemplate); ///////////////////////////
 // Test cases
 // when calling "addItem" without parameters, result should be false
 this.toDo.addItem().should.be.false; // when adding empty array, result should be false
@@ -6894,9 +6898,16 @@ this.toDo.addItem([]).should.be.false; // item html is as should be
 item.should.equal(itemTemplate); // expect only 1 item to exist
 expect(this.toDo.items).to.have.length(1); // item object was added to the array list of items
 expect(this.toDo.items[0]).to.eql({text:"aaa",checked:false,timestamp:"1447685104912"}); // item was added to the DOM
-this.toDo.DOM.ToDoList[0].firstElementChild.should.exist;});it('should remove an item from the list',function(){ // add 1 item
+this.toDo.DOM.ToDoList[0].firstElementChild.should.exist;});it('should remove an item from the list',function(){ ///////////////////////////
+// Preparation code
+// add 1 item
 this.toDo.addItem([{text:'aaa',checked:false,timestamp:'123'}]); // remove last added item
 this.toDo.removeItem(0); ///////////////////
 // Test cases
 // check if item was removed
-expect(this.toDo.items).to.be.empty;});it('should mark a list item as "done"',function(){});it('should clear all "done" items',function(){});it('should normalize item input',function(){});it('should filter by "active"',function(){});it('should filter by "completed"',function(){});it('should select all items',function(){});});});
+expect(this.toDo.items).to.be.empty;});it('should mark a list item as "done"',function(){ ///////////////////////////
+// Preparation code
+this.toDo.addItem([{text:'aaa',checked:false,timestamp:'123'}]); ///////////////////
+// Test cases
+// check if item was marked
+this.toDo.markItem(0).should.be.false;this.toDo.markItem(0,'1').should.be.false;this.toDo.markItem(2,true).should.be.false;this.toDo.markItem(null,true).should.be.false;this.toDo.markItem(0,true);expect(this.toDo.getItemByIndex(0).find(':checkbox')[0].checked).to.be.true;expect(this.toDo.items[0].checked).to.be.true;});it('should clear all "done" items');it('should normalize item input');it('should filter by "active"');it('should filter by "completed"');it('should select all items');});});
