@@ -4,6 +4,7 @@ var gulp         = require('gulp'),
     watch        = require('gulp-watch'),
     webserver    = require('gulp-webserver'),
     rollup       = require('gulp-rollup'),
+    babelRollup  = require('rollup-plugin-babel'),
 
     sourcemaps   = require('gulp-sourcemaps'),
     sass         = require('gulp-sass'),
@@ -184,6 +185,7 @@ gulp.task('combineControllers', function() {
         .pipe(gulp.dest('./js/dist/auto-generated'))
 });
 
+
 gulp.task('bundleJS', function() {
     fs.truncate('../js/ToDoApp.js', 0, function() {
         console.log('emptied "ToDoApp.js" file')
@@ -193,9 +195,17 @@ gulp.task('bundleJS', function() {
         //.pipe(rollup({format: 'amd'}))
         .pipe(rollup({
             format : 'umd',
-            moduleId: config.namespace
+            moduleId: config.namespace,
+            sourceMap: true,
+            plugins: [
+                babelRollup({
+                    presets: ['es2015-rollup'],
+                    exclude: 'node_modules/**'
+                })
+              ]
            // exports : 'named', // doesn't work
         }))
+        .pipe(sourcemaps.write("."))
         //.pipe(babel().on('error', function(err){ console.log(err.message) }))
         .pipe(concat( config.namespace + '.js'))
 
@@ -203,47 +213,11 @@ gulp.task('bundleJS', function() {
 });
 
 
-// build App scripts
-// DEPRECATED
-gulp.task('buildJS', function() {
-    var src = [
-        './js/dist/app.js',
-        './js/dist/templates.js',
-        './js/dist/config.js',
-        './js/dist/utilities.js',
-        './js/dist/components/**/*.js',
-        './js/dist/pages/**/*.js',
-        './js/dist/modals/*.js',
-    ];
-
-    if (!config.production)
-        src.push('./js/dist/DEV.js');
-
-    // Add the "init.js" file at the end
-    src.push('./js/dist/init.js');
-
-    gulp.src(src)
-        .pipe(sourcemaps.init())
-        .pipe(concat( config.namespace + '.js'))
-        .pipe(babel({
-                modules : 'umd',
-                moduleIds : 'XXX'
-            }).on('error', function(err){ console.log(err.message) }))
-        .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest('../js/'))
-
-
-    if( config.production )
-        gulp.task('compress');
-});
-
 
 gulp.task('build_vendor_JS', function() {
     gulp.src('./js/vendor/*.js')
         .pipe(gulp.dest('../js/vendor'))
 });
-
-
 
 
 
