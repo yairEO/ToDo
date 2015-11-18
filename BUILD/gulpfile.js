@@ -202,14 +202,14 @@ gulp.task('bundleJS', function() {
                     presets: ['es2015-rollup'],
                     exclude: 'node_modules/**'
                 })
-              ]
+            ]
            // exports : 'named', // doesn't work
         }))
-        .pipe(sourcemaps.write("."))
         //.pipe(babel().on('error', function(err){ console.log(err.message) }))
         .pipe(concat( config.namespace + '.js'))
 
         .pipe(gulp.dest('../js/'))
+        .pipe(sourcemaps.write("."))
 });
 
 
@@ -222,16 +222,22 @@ gulp.task('build_vendor_JS', function() {
 
 
 
+
+
 //////////////////////////////////////////
 
 gulp.task('tests', function(){
     gulp.src('./tests/dist/*.js', {read: false})
         .pipe(rollup({
-            format : 'umd'
+            format : 'umd',
+            plugins: [
+                babelRollup({
+                    presets: ['es2015-rollup'],
+                    exclude: 'node_modules/**'
+                })
+            ]
         }))
-        .pipe(babel({
-            presets: ['es2015']
-        }).on('error', function(err){ console.log(err.message) }))
+        .pipe(stripDebug())
 
         .pipe(gulp.dest('./tests/'))
 

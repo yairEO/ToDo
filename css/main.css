@@ -104,7 +104,7 @@ body {
   padding: 0;
   margin: 0;
   position: relative;
-  font: 400 14px/1.4 Roboto, Arial, sans-serif;
+  font: 400 14px / 1.4 Roboto, Arial, sans-serif;
   color: #111;
   overflow-y: scroll;
   tap-highlight-color: transparent;
@@ -217,7 +217,7 @@ h4 {
 img[data-src] {
   opacity: 0;
   -webkit-transition: opacity 0.2s;
-          transition: opacity 0.2s;
+  transition: opacity 0.2s;
 }
 
 img[data-src].loaded {
@@ -279,7 +279,7 @@ i.info {
   box-shadow: 0 0 0 1px;
   cursor: help;
   -webkit-transition: 0.1s;
-          transition: 0.1s;
+  transition: 0.1s;
 }
 
 i.info:hover {
@@ -300,7 +300,7 @@ i.info:hover {
   background: none;
   white-space: pre-wrap;
   -webkit-transition: .2s;
-          transition: .2s;
+  transition: .2s;
 }
 
 .editable[contenteditable]:hover {
@@ -357,7 +357,7 @@ input::placeholder {
   background: rgba(204, 204, 204, 0.8);
   -webkit-backface-visibility: hidden;
   -webkit-transition: opacity 0.25s;
-          transition: opacity 0.25s;
+  transition: opacity 0.25s;
 }
 
 #modal:after {
@@ -378,7 +378,7 @@ input::placeholder {
       -ms-transform: none;
           transform: none;
   -webkit-transition: 0.3s 0.1s cubic-bezier(0.15, 0.53, 0.34, 1);
-          transition: 0.3s 0.1s cubic-bezier(0.15, 0.53, 0.34, 1);
+  transition: 0.3s 0.1s cubic-bezier(0.15, 0.53, 0.34, 1);
 }
 
 #modal.show > .wrap > .content {
@@ -423,7 +423,7 @@ input::placeholder {
   font-size: 1em;
   color: #FFF;
   -webkit-transition: 0.3s cubic-bezier(0.15, 0.53, 0.34, 1);
-          transition: 0.3s cubic-bezier(0.15, 0.53, 0.34, 1);
+  transition: 0.3s cubic-bezier(0.15, 0.53, 0.34, 1);
 }
 
 #modal .wrap > .content {
@@ -454,7 +454,7 @@ input::placeholder {
   padding: 5px;
   cursor: pointer;
   -webkit-transition: 0.2s;
-          transition: 0.2s;
+  transition: 0.2s;
 }
 
 #modal .wrap > .content > a.close:hover {
@@ -509,7 +509,7 @@ input::placeholder {
   opacity: 0;
   margin-left: -2.5em;
   -webkit-transition: .12s ease-out;
-          transition: .12s ease-out;
+  transition: .12s ease-out;
 }
 
 .ToDoComponent .editable {
@@ -660,7 +660,7 @@ input::placeholder {
   background: rgba(255, 255, 255, 0.8);
   overflow: hidden;
   -webkit-transition: .2s ease-out;
-          transition: .2s ease-out;
+  transition: .2s ease-out;
 }
 
 .ToDoComponent__item label {
@@ -680,7 +680,7 @@ input::placeholder {
   border-radius: 3px;
   background: #FFF;
   -webkit-transition: 0s;
-          transition: 0s;
+  transition: 0s;
   text-decoration: none !important;
 }
 
@@ -706,13 +706,13 @@ input::placeholder {
       -ms-transform: scale(0);
           transform: scale(0);
   -webkit-transition: .25s ease-out;
-          transition: .25s ease-out;
+  transition: .25s ease-out;
 }
 
 .ToDoComponent__item__remove:hover {
   background: rgba(211, 71, 71, 0.1);
   -webkit-transition: .1s;
-          transition: .1s;
+  transition: .1s;
 }
 
 .ToDoComponent__item:hover .ToDoComponent__item__remove {
@@ -827,7 +827,7 @@ input::placeholder {
   font-size: 1.6em;
   font-weight: 700;
   -webkit-transition: .1s;
-          transition: .1s;
+  transition: .1s;
 }
 
 .ToDoPage .giLink:hover {

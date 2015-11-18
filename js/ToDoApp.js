@@ -5,6 +5,12 @@
 }(this, function () { 'use strict';
 
     var babelHelpers = {};
+
+    babelHelpers.typeof = function (obj) {
+      return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj;
+    };
+
+    babelHelpers;
     // Change all checkboxes in the page to their "default" state
     function defaultCheckboxes() {
         var allInputs = document.querySelectorAll('input');
@@ -14,59 +20,6 @@
             if (input.type == 'checkbox') input.checked = input.defaultChecked;else input.value = input.defaultValue;
         });
     }
-
-    var string = {
-        normalizeContentEditable: function normalizeContentEditable(s) {
-            if (!s) return '';
-
-            return s.trim().replace(/<br(\s*)\/*>/ig, '\n').replace(/&nbsp;/ig, ' ').replace(/<[p|div]\s/ig, '\n$0').replace(/(<([^>]+)>)/ig, "");
-        },
-
-        random: function random(n) {
-            var s = '';
-
-            while (n--) {
-                s += Math.random().toString(36).substring(7);
-            }
-
-            return s;
-        }
-    };
-
-    (function () {
-        $(document).on('keydown.editable input.editable', '.editable', onInput).on('paste', '.editable', onPaste).on('focus.editable', '.editable', onFocus).on('blur.editable', '.editable', onFocus);
-
-        function onInput(e) {
-            var el = $(this);
-
-            if (el.hasClass('singleline') && e.keyCode === 13) return false;
-
-            if (el.text()) el.addClass('filled');
-        }
-
-        function onFocus() {
-            if (!string.normalizeContentEditable(this.innerHTML).trim()) {
-                this.innerHTML = '';
-                $(this).removeClass('filled');
-            }
-        }
-
-        function onPaste(e) {
-            var content;
-
-            e.preventDefault();
-
-            if (e.originalEvent.clipboardData) {
-                content = (e.originalEvent || e).clipboardData.getData('text/plain');
-                document.execCommand('insertText', false, content);
-            } else if (window.clipboardData) {
-                content = window.clipboardData.getData('Text');
-                var newNode = document.createTextNode(content);
-
-                if (window.getSelection) window.getSelection().getRangeAt(0).insertNode(newNode);
-            }
-        }
-    })();
 
     /////////////////////////////////
     // Global cached DOM elements
@@ -78,46 +31,95 @@
         $BODY: $(document.body)
     };
 
+    var Router = {
+        routes: [],
+        mode: null,
+        root: '/',
+        config: function config(options) {
+            this.mode = options && options.mode && options.mode == 'history' && !!history.pushState ? 'history' : 'hash';
+            this.root = options && options.root ? '/' + this.clearSlashes(options.root) + '/' : '/';
+            return this;
+        },
+        getFragment: function getFragment() {
+            var fragment = '';
+            if (this.mode === 'history') {
+                fragment = this.clearSlashes(decodeURI(location.pathname + location.search));
+                fragment = fragment.replace(/\?(.*)$/, '');
+                fragment = this.root != '/' ? fragment.replace(this.root, '') : fragment;
+            } else {
+                var match = window.location.href.match(/#(.*)$/);
+                fragment = match ? match[1] : '';
+            }
+            return this.clearSlashes(fragment);
+        },
+        clearSlashes: function clearSlashes(path) {
+            return path.toString().replace(/\/$/, '').replace(/^\//, '');
+        },
+        add: function add(re, handler) {
+            if (typeof re == 'function') {
+                handler = re;
+                re = '';
+            }
+            this.routes.push({ re: re, handler: handler });
+            return this;
+        },
+        remove: function remove(param) {
+            for (var i = 0, r; i < this.routes.length, r = this.routes[i]; i++) {
+                if (r.handler === param || r.re.toString() === param.toString()) {
+                    this.routes.splice(i, 1);
+                    return this;
+                }
+            }
+            return this;
+        },
+        flush: function flush() {
+            this.routes = [];
+            this.mode = null;
+            this.root = '/';
+            return this;
+        },
+        check: function check(f) {
+            var fragment = f || this.getFragment();
+            for (var i = 0; i < this.routes.length; i++) {
+                var match = fragment.match(this.routes[i].re);
+                if (match) {
+                    match.shift();
+                    this.routes[i].handler.apply({}, match);
+                    return this;
+                }
+            }
+            return this;
+        },
+        listen: function listen() {
+            var self = this;
+            var current = self.getFragment();
+            var fn = function fn() {
+                if (current !== self.getFragment()) {
+                    current = self.getFragment();
+                    self.check(current);
+                }
+            };
+            clearInterval(this.interval);
+            this.interval = setInterval(fn, 50);
+            return this;
+        },
+        navigate: function navigate(path) {
+            path = path ? path : '';
+            if (this.mode === 'history') {
+                history.pushState(null, null, this.root + this.clearSlashes(path));
+            } else {
+                window.location.href.match(/#(.*)$/);
+                window.location.href = window.location.href.replace(/#(.*)$/, '') + '#' + path;
+            }
+            return this;
+        }
+    };
+
+    // configuration
+    Router.config({ mode: 'history' });
+
     var list_item = "{{ items.forEach(function(item, i){ }}\r\n<li class='ToDoComponent__item {{= item.checked ? \"completed\" : \"\" }}' data-timestamp='{{= item.timestamp }}'>\r\n    <label>\r\n        <input type='checkbox' class='toggleItem' {{= item.checked ? 'checked' : '' }}>\r\n    </label>\r\n    <span class='ToDoComponent__item__text editable' contenteditable>{{= item.text }}</span>\r\n    <button class='ToDoComponent__item__remove' title='Remove item from list'>&times;</button>\r\n</li>\r\n{{ }); }}";
     var toDo$1 = "<div class='ToDoComponent'>\r\n    <button class='removeList' title='Remove list'>&times;</button>\r\n    <header class='ToDoComponent__header'>\r\n        <label class='selectAllLabel' title='Select all list items'>\r\n            <input type='checkbox' class='selectAll'>\r\n        </label>\r\n        <div class='addToDoItem editable' contenteditable placeholder='Write something...'></div>\r\n    </header>\r\n\r\n    <ul class='ToDoComponent__list'></ul>\r\n\r\n    <footer class='ToDoComponent__footer'>\r\n        <div class='ToDoComponent__items-left' data-items-left='0'>item<span>s</span> left</div>\r\n        <div class='filter'>\r\n            <span data-filter='all' class='active'>All</span>\r\n            <span data-filter='active'>Active</span>\r\n            <span data-filter='completed'>Completed</span>\r\n        </div>\r\n        <button class='clearCompleted'>Clear Completed</button>\r\n    </footer>\r\n</div>";
-
-    /**
-     * Copies the values of `source` to `array`.
-     *
-     * @private
-     * @param {Array} source The array to copy values from.
-     * @param {Array} [array=[]] The array to copy values to.
-     * @returns {Array} Returns `array`.
-     */
-    function arrayCopy(source, array) {
-      var index = -1,
-          length = source.length;
-
-      array || (array = Array(length));
-      while (++index < length) {
-        array[index] = source[index];
-      }
-      return array;
-    }
-
-    /**
-     * Appends the elements of `values` to `array`.
-     *
-     * @private
-     * @param {Array} array The array to modify.
-     * @param {Array} values The values to append.
-     * @returns {Array} Returns `array`.
-     */
-    function arrayPush(array, values) {
-      var index = -1,
-          length = values.length,
-          offset = array.length;
-
-      while (++index < length) {
-        array[offset + index] = values[index];
-      }
-      return array;
-    }
 
     /**
      * Checks if `value` is the [language type](https://es5.github.io/#x8) of `Object`.
@@ -142,7 +144,7 @@
     function isObject(value) {
       // Avoid a V8 JIT bug in Chrome 19-20.
       // See https://code.google.com/p/v8/issues/detail?id=2291 for more details.
-      var type = typeof value === 'undefined' ? 'undefined' : babelHelpers._typeof(value);
+      var type = typeof value === 'undefined' ? 'undefined' : babelHelpers.typeof(value);
       return !!value && (type == 'object' || type == 'function');
     }
 
@@ -235,7 +237,7 @@
      * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
      */
     function isObjectLike(value) {
-      return !!value && (typeof value === 'undefined' ? 'undefined' : babelHelpers._typeof(value)) == 'object';
+      return !!value && (typeof value === 'undefined' ? 'undefined' : babelHelpers.typeof(value)) == 'object';
     }
 
     /** Used to detect host constructors (Safari > 5). */
@@ -789,6 +791,44 @@
     };
 
     /**
+     * Copies the values of `source` to `array`.
+     *
+     * @private
+     * @param {Array} source The array to copy values from.
+     * @param {Array} [array=[]] The array to copy values to.
+     * @returns {Array} Returns `array`.
+     */
+    function arrayCopy(source, array) {
+      var index = -1,
+          length = source.length;
+
+      array || (array = Array(length));
+      while (++index < length) {
+        array[index] = source[index];
+      }
+      return array;
+    }
+
+    /**
+     * Appends the elements of `values` to `array`.
+     *
+     * @private
+     * @param {Array} array The array to modify.
+     * @param {Array} values The values to append.
+     * @returns {Array} Returns `array`.
+     */
+    function arrayPush(array, values) {
+      var index = -1,
+          length = values.length,
+          offset = array.length;
+
+      while (++index < length) {
+        array[offset + index] = values[index];
+      }
+      return array;
+    }
+
+    /**
      * Adds all own enumerable function properties of a source object to the
      * destination object. If `object` is a function then methods are added to
      * its prototype as well.
@@ -888,19 +928,19 @@
     };
 
     /** Detect free variable `exports`. */
-    var freeExports = objectTypes[typeof exports === 'undefined' ? 'undefined' : babelHelpers._typeof(exports)] && exports && !exports.nodeType && exports;
+    var freeExports = objectTypes[typeof exports === 'undefined' ? 'undefined' : babelHelpers.typeof(exports)] && exports && !exports.nodeType && exports;
 
     /** Detect free variable `module`. */
-    var freeModule = objectTypes[typeof module === 'undefined' ? 'undefined' : babelHelpers._typeof(module)] && module && !module.nodeType && module;
+    var freeModule = objectTypes[typeof module === 'undefined' ? 'undefined' : babelHelpers.typeof(module)] && module && !module.nodeType && module;
 
     /** Detect free variable `global` from Node.js. */
-    var freeGlobal = freeExports && freeModule && (typeof global === 'undefined' ? 'undefined' : babelHelpers._typeof(global)) == 'object' && global && global.Object && global;
+    var freeGlobal = freeExports && freeModule && (typeof global === 'undefined' ? 'undefined' : babelHelpers.typeof(global)) == 'object' && global && global.Object && global;
 
     /** Detect free variable `self`. */
-    var freeSelf = objectTypes[typeof self === 'undefined' ? 'undefined' : babelHelpers._typeof(self)] && self && self.Object && self;
+    var freeSelf = objectTypes[typeof self === 'undefined' ? 'undefined' : babelHelpers.typeof(self)] && self && self.Object && self;
 
     /** Detect free variable `window`. */
-    var freeWindow = objectTypes[typeof window === 'undefined' ? 'undefined' : babelHelpers._typeof(window)] && window && window.Object && window;
+    var freeWindow = objectTypes[typeof window === 'undefined' ? 'undefined' : babelHelpers.typeof(window)] && window && window.Object && window;
 
     /**
      * Used as a reference to the global object.
@@ -2778,7 +2818,7 @@
       if (!isObject(object)) {
         return false;
       }
-      var type = typeof index === 'undefined' ? 'undefined' : babelHelpers._typeof(index);
+      var type = typeof index === 'undefined' ? 'undefined' : babelHelpers.typeof(index);
       if (type == 'number' ? isArrayLike(object) && isIndex(index, object.length) : type == 'string' && index in object) {
         var other = object[index];
         return value === value ? value === other : other !== other;
@@ -3798,7 +3838,7 @@
      * @returns {boolean} Returns `true` if `value` is a property name, else `false`.
      */
     function isKey(value, object) {
-      var type = typeof value === 'undefined' ? 'undefined' : babelHelpers._typeof(value);
+      var type = typeof value === 'undefined' ? 'undefined' : babelHelpers.typeof(value);
       if (type == 'string' && reIsPlainProp.test(value) || type == 'number') {
         return true;
       }
@@ -3987,7 +4027,7 @@
      * @returns {Function} Returns the callback.
      */
     function baseCallback(func, thisArg, argCount) {
-      var type = typeof func === 'undefined' ? 'undefined' : babelHelpers._typeof(func);
+      var type = typeof func === 'undefined' ? 'undefined' : babelHelpers.typeof(func);
       if (type == 'function') {
         return thisArg === undefined ? func : bindCallback(func, thisArg, argCount);
       }
@@ -13073,6 +13113,24 @@
     lodash.prototype.select = lodash.prototype.filter;
     lodash.prototype.tail = lodash.prototype.rest;
 
+    var string = {
+        normalizeContentEditable: function normalizeContentEditable(s) {
+            if (!s) return '';
+
+            return s.trim().replace(/<br(\s*)\/*>/ig, '\n').replace(/&nbsp;/ig, ' ').replace(/<[p|div]\s/ig, '\n$0').replace(/(<([^>]+)>)/ig, "");
+        },
+
+        random: function random(n) {
+            var s = '';
+
+            while (n--) {
+                s += Math.random().toString(36).substring(7);
+            }
+
+            return s;
+        }
+    };
+
     // log if any DOM elemtn wasn't cached
     function checkDOMbinding(DOM) {
         for (var i in DOM) {
@@ -13353,93 +13411,6 @@
         }
     };
 
-    var Router = {
-        routes: [],
-        mode: null,
-        root: '/',
-        config: function config(options) {
-            this.mode = options && options.mode && options.mode == 'history' && !!history.pushState ? 'history' : 'hash';
-            this.root = options && options.root ? '/' + this.clearSlashes(options.root) + '/' : '/';
-            return this;
-        },
-        getFragment: function getFragment() {
-            var fragment = '';
-            if (this.mode === 'history') {
-                fragment = this.clearSlashes(decodeURI(location.pathname + location.search));
-                fragment = fragment.replace(/\?(.*)$/, '');
-                fragment = this.root != '/' ? fragment.replace(this.root, '') : fragment;
-            } else {
-                var match = window.location.href.match(/#(.*)$/);
-                fragment = match ? match[1] : '';
-            }
-            return this.clearSlashes(fragment);
-        },
-        clearSlashes: function clearSlashes(path) {
-            return path.toString().replace(/\/$/, '').replace(/^\//, '');
-        },
-        add: function add(re, handler) {
-            if (typeof re == 'function') {
-                handler = re;
-                re = '';
-            }
-            this.routes.push({ re: re, handler: handler });
-            return this;
-        },
-        remove: function remove(param) {
-            for (var i = 0, r; i < this.routes.length, r = this.routes[i]; i++) {
-                if (r.handler === param || r.re.toString() === param.toString()) {
-                    this.routes.splice(i, 1);
-                    return this;
-                }
-            }
-            return this;
-        },
-        flush: function flush() {
-            this.routes = [];
-            this.mode = null;
-            this.root = '/';
-            return this;
-        },
-        check: function check(f) {
-            var fragment = f || this.getFragment();
-            for (var i = 0; i < this.routes.length; i++) {
-                var match = fragment.match(this.routes[i].re);
-                if (match) {
-                    match.shift();
-                    this.routes[i].handler.apply({}, match);
-                    return this;
-                }
-            }
-            return this;
-        },
-        listen: function listen() {
-            var self = this;
-            var current = self.getFragment();
-            var fn = function fn() {
-                if (current !== self.getFragment()) {
-                    current = self.getFragment();
-                    self.check(current);
-                }
-            };
-            clearInterval(this.interval);
-            this.interval = setInterval(fn, 50);
-            return this;
-        },
-        navigate: function navigate(path) {
-            path = path ? path : '';
-            if (this.mode === 'history') {
-                history.pushState(null, null, this.root + this.clearSlashes(path));
-            } else {
-                window.location.href.match(/#(.*)$/);
-                window.location.href = window.location.href.replace(/#(.*)$/, '') + '#' + path;
-            }
-            return this;
-        }
-    };
-
-    // configuration
-    Router.config({ mode: 'history' });
-
     function toDo() {
         "use strict"
 
@@ -13556,6 +13527,41 @@
     var controllers = Object.freeze({
         toDo: toDo
     });
+
+    (function () {
+        $(document).on('keydown.editable input.editable', '.editable', onInput).on('paste', '.editable', onPaste).on('focus.editable', '.editable', onFocus).on('blur.editable', '.editable', onFocus);
+
+        function onInput(e) {
+            var el = $(this);
+
+            if (el.hasClass('singleline') && e.keyCode === 13) return false;
+
+            if (el.text()) el.addClass('filled');
+        }
+
+        function onFocus() {
+            if (!string.normalizeContentEditable(this.innerHTML).trim()) {
+                this.innerHTML = '';
+                $(this).removeClass('filled');
+            }
+        }
+
+        function onPaste(e) {
+            var content;
+
+            e.preventDefault();
+
+            if (e.originalEvent.clipboardData) {
+                content = (e.originalEvent || e).clipboardData.getData('text/plain');
+                document.execCommand('insertText', false, content);
+            } else if (window.clipboardData) {
+                content = window.clipboardData.getData('Text');
+                var newNode = document.createTextNode(content);
+
+                if (window.getSelection) window.getSelection().getRangeAt(0).insertNode(newNode);
+            }
+        }
+    })();
 
     // import * as utils from './utils';
 
