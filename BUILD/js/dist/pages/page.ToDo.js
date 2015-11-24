@@ -1,5 +1,4 @@
 import ToDoList from '../components/component.toDo';
-import _ from '../vendor/lodash/lodash';
 import Router from '../vendor/router';
 
 export function toDo(){

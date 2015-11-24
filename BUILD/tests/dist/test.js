@@ -27,6 +27,7 @@ describe('To-Do', function(){
         item = minifier(item).replace(/(\r\n|\n|\r)/gm,"");
         itemTemplate = minifier(itemTemplate);
 
+
         ///////////////////////////
         // Test cases
 
@@ -90,23 +91,13 @@ describe('To-Do', function(){
         expect( this.toDo.items[0].checked ).to.be.true;
     });
 
-
-
     it('should clear all "done" items');
-
-
 
     it('should normalize item input');
 
-
-
     it('should filter by "active"');
 
-
-
     it('should filter by "completed"');
-
-
 
     it('should select all items');
 })

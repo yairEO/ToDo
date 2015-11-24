@@ -38,6 +38,7 @@ import Router from './vendor/router';
         Router.check(); // check current window url
     }
 
+    // Global app events
     var events = {
 	   // high-level events binding goes here
         bind : function(){
