@@ -37,11 +37,4 @@ return-1},u.mixin=Z,u.noConflict=function(){return mr._=Tr,this},u.random=functi
 }),a+="';",i||(i="obj",a="with("+i+"||{}){"+a+"}"),a="function("+i+"){var __t,__p='',__j=Array.prototype.join;function print(){__p+=__j.call(arguments,'')}"+a+"return __p}";try{var l=Function("_","return "+a)(o)}catch(c){throw c.source=a,c}return r?l(r):(l.source=a,l)},u.unescape=function(n){return null==n?"":(n+"").replace(Hr,d)},u.uniqueId=function(n){var r=++tr+"";return n?n+r:r},u.all=B,u.any=P,u.detect=q,u.findWhere=function(n,r){return U(n,r,true)},u.foldl=W,u.foldr=z,u.include=k,u.inject=W,u.first=V,u.last=function(n,r,t){var u=0,o=n?n.length:0;
 if(typeof r!="number"&&null!=r){var i=o;for(r=X(r,t,3);i--&&r(n[i],i,n);)u++}else if(u=r,null==u||t)return n?n[o-1]:rr;return e(n,Mr(0,o-u))},u.sample=function(n,r,t){return n&&typeof n.length!="number"&&(n=R(n)),null==r||t?n?n[0+Sr(Wr()*(n.length-1-0+1))]:rr:(n=C(n),n.length=$r(Mr(0,r),n.length),n)},u.take=V,u.head=V,Z(u),u.VERSION="2.4.1",u.prototype.chain=function(){return this.__chain__=true,this},u.prototype.value=function(){return this.__wrapped__},D("pop push reverse shift sort splice unshift".split(" "),function(n){var r=jr[n];
 u.prototype[n]=function(){var n=this.__wrapped__;return r.apply(n,arguments),zr.spliceObjects||0!==n.length||delete n[0],this}}),D(["concat","join","slice"],function(n){var r=jr[n];u.prototype[n]=function(){var n=r.apply(this.__wrapped__,arguments);return this.__chain__&&(n=new o(n),n.__chain__=true),n}}),typeof define=="function"&&typeof define.amd=="object"&&define.amd?(mr._=u, define(function(){return u})):_r&&dr?br?(dr.exports=u)._=u:_r._=u:mr._=u}).call(this);
-
-// setup lodash template
-_.templateSettings = {
-    interpolate : /\{\{\=(.+?)\}\}/g,
-    escape      : /\{\{\-(.+?)\}\}/g,
-    evaluate    : /\{\{(.+?)\}\}/g
-};
-//# sourceMappingURL=all.js.map
+//# sourceMappingURL=dep.js.map

@@ -391,7 +391,7 @@ gulp.task('set-prod', function() {
 
 gulp.task('prod', ['set-prod', 'default', 'compress']); // generate code for production-only
 
-gulp.task('default', [ 'icomoon', 'scss', 'spriteLoop', 'templates', 'bundleJS', 'build_vendor_JS', 'lint', 'watch', 'webserver', 'tests']);
+gulp.task('default', [ 'icomoon', 'scss', 'spriteLoop', 'templates', 'concatJS', 'bundleJS', 'build_vendor_JS', 'lint', 'watch', 'webserver', 'tests']);
 
 gulp.task('watch', function() {
     //    gulp.watch('./views/modals/*.html', ['modals']);
@@ -399,7 +399,7 @@ gulp.task('watch', function() {
     gulp.watch('./css/dist/**/*.scss', ['scss']);
     // gulp.watch('./css/dist/voting/**/*.scss', ['voting_styles']); // voting system styles
     gulp.watch('./templates/**/*.html', ['templates', 'bundleJS']);
-    //gulp.watch('./js/concatenated/*.js', ['concatJS']);
+    gulp.watch('./js/concatenated/*.js', ['concatJS']);
     gulp.watch(['./js/dist/pages/**/*.js'], ['combineControllers', 'bundleJS']);
     gulp.watch(['./js/dist/*.js', './js/dist/components/**/*.js', './js/dist/utils/*.js', './js/dist/vendor/**/*.js'], ['bundleJS', 'tests', 'lint']);
     gulp.watch('./js/vendor/**/*.js', ['build_vendor_JS']);

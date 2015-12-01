@@ -1,7 +1,6 @@
 import string from '../utils/string';
 import checkDOMbinding from '../utils/checkDOMbinding';
 import * as templates from '../auto-generated/templates';
-import _ from '../vendor/lodash/lodash';
 
 
 // "To-Do list" component controller
@@ -21,6 +20,10 @@ export default function ToDoList(settings = {}){
 
 ToDoList.prototype = {
     init : function(){
+        this.templates.component = _.template(templates.toDo);
+        this.templates.listItem  = _.template(templates.list_item);
+
+
         // render the component template and jQuerify it
         this.DOM.scope = $( this.templates.component({ id : this.settings.id}) );
         this.DOM.scope.data('component', this); // save scope on top DOM node
@@ -37,10 +40,7 @@ ToDoList.prototype = {
     },
 
     // component's temlpates
-    templates : {
-        component : _.template(templates.toDo),
-        listItem : _.template(templates.list_item)
-    },
+    templates : {},
 
     // populate DOM object
     populateDOM : function(DOM, scope){
