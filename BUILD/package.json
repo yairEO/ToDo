@@ -27,7 +27,7 @@
     "gulp-css-globbing": "^0.1.8",
     "gulp-cssshrink": "^0.1.5",
     "gulp-eslint": "^1.1.0",
-    "gulp-file-contents-to-modules": "*",
+    "gulp-file-contents-to-modules": "latest",
     "gulp-html-to-json": "^0.1.5",
     "gulp-htmlmin": "^1.2.0",
     "gulp-insert": "^0.5.0",
