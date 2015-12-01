@@ -1,7 +1,7 @@
 import defaultCheckboxes from './utils/defaultCheckboxes';
 import './utils/contenteditable';
 import DOM from './utils/DOMcache';
-import * as controllers from './auto-generated/controllers_bundle';
+import * as controllers from './controllers/controllers_bundle';
 import Router from './vendor/router';
 // import * as utils from './utils';
 

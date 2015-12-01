@@ -1,7 +1,7 @@
 import ToDoList from '../components/component.toDo';
 import Router from '../vendor/router';
 
-export function toDo(){
+export default function toDo(){
     "use strict";
 
     // Cached page DOM elements

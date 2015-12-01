@@ -26,7 +26,7 @@
     function checkDOMbinding(DOM) {
         for (var i in DOM) {
             if (!DOM[i]) {
-                console.log(Function.caller, i, ' - DOM reference empty');
+                void 0;
             }
         }
     }
@@ -153,7 +153,7 @@
         // marks an item as completed
         markItem: function markItem(idx, state) {
             if (typeof idx == 'undefined' || !this.items[idx] || typeof state != 'boolean') {
-                console.warn('parameters are not valid');
+                void 0;
                 return false;
             }
 

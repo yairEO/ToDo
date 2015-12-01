@@ -178,13 +178,6 @@ gulp.task('concatJS', function() {
 });
 
 
-gulp.task('combineControllers', function() {
-    // combine all page controllers
-    gulp.src('./js/dist/pages/**/*.js')
-        .pipe(concat('controllers_bundle.js'))
-        .pipe(gulp.dest('./js/dist/auto-generated'))
-});
-
 
 gulp.task('bundleJS', function() {
     fs.truncate('../js/ToDoApp.js', 0, function() {
@@ -347,7 +340,7 @@ gulp.task('lint', function () {
     return gulp.src(['./js/dist/*.js',
                     './js/dist/components/**/*.js',
                     './js/dist/modals/**/*.js',
-                    './js/dist/pages/**/*.js',
+                    './js/dist/controllers/**/*.js',
                     './js/dist/utils/**/*.js'
                     ])
         // eslint() attaches the lint output to the eslint property
@@ -400,8 +393,7 @@ gulp.task('watch', function() {
     // gulp.watch('./css/dist/voting/**/*.scss', ['voting_styles']); // voting system styles
     gulp.watch('./templates/**/*.html', ['templates', 'bundleJS']);
     gulp.watch('./js/concatenated/*.js', ['concatJS']);
-    gulp.watch(['./js/dist/pages/**/*.js'], ['combineControllers', 'bundleJS']);
-    gulp.watch(['./js/dist/*.js', './js/dist/components/**/*.js', './js/dist/utils/*.js', './js/dist/vendor/**/*.js'], ['bundleJS', 'tests', 'lint']);
+    gulp.watch(['./js/dist/controllers/**/*.js', './js/dist/*.js', './js/dist/components/**/*.js', './js/dist/utils/*.js', './js/dist/vendor/**/*.js'], ['bundleJS', 'tests', 'lint']);
     gulp.watch('./js/vendor/**/*.js', ['build_vendor_JS']);
     gulp.watch('./fonts/selection.json', ['icomoon']);
     gulp.watch('./tests/dist/*.js', ['tests', 'tests-lint']);
